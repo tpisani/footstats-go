@@ -50,7 +50,7 @@ func NewClient(baseURL, user, password string) *Client {
 }
 
 func (c *Client) Championships() ([]*Championship, error) {
-	data, err := makeRequest("ListaCampeonatos")
+	data, err := c.makeRequest("ListaCampeonatos")
 	if err != nil {
 		return nil, err
 	}
