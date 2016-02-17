@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	gourl "net/url"
 	"regexp"
 )
 
@@ -14,13 +15,19 @@ type Client struct {
 	password string
 }
 
-func (c *Client) buildURL(endpoint string) string {
-	return fmt.Sprintf("%s%s?usuario=%s&senha=%s",
+func (c *Client) buildURL(endpoint string, params *gourl.Values) string {
+	url := fmt.Sprintf("%s%s?usuario=%s&senha=%s",
 		c.baseURL, endpoint, c.user, c.password)
+
+	if params != nil {
+		url = fmt.Sprintf("%s&%s", url, params.Encode())
+	}
+
+	return url
 }
 
-func (c *Client) makeRequest(endpoint string) ([]byte, error) {
-	url := c.buildURL(endpoint)
+func (c *Client) makeRequest(endpoint string, params *gourl.Values) ([]byte, error) {
+	url := c.buildURL(endpoint, params)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -51,7 +58,7 @@ func NewClient(baseURL, user, password string) *Client {
 }
 
 func (c *Client) Championships() ([]*Championship, error) {
-	data, err := c.makeRequest("ListaCampeonatos")
+	data, err := c.makeRequest("ListaCampeonatos", nil)
 	if err != nil {
 		return nil, err
 	}
