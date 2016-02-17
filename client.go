@@ -7,6 +7,7 @@ import (
 	"net/http"
 	gourl "net/url"
 	"regexp"
+	"strconv"
 )
 
 type Client struct {
@@ -70,4 +71,22 @@ func (c *Client) Championships() ([]*Championship, error) {
 	}
 
 	return footstatsData.championships(), nil
+}
+
+func (c *Client) Matches(championshipId int64) ([]*Match, error) {
+	params := &gourl.Values{}
+	params.Set("campeonato", strconv.FormatInt(championshipId, 10))
+
+	data, err := c.makeRequest("ListaPartidas", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var footstatsData matchData
+	err = json.Unmarshal(data, &footstatsData)
+	if err != nil {
+		return nil, err
+	}
+
+	return footstatsData.matches(), nil
 }
