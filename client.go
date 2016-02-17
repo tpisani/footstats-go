@@ -35,9 +35,10 @@ func (c *Client) makeRequest(endpoint string) ([]byte, error) {
 	// TODO: Make this a constant somehow. It causes a build
 	// error when put on const declarations:
 	// const initializer regexp.MustCompile(...) is not a constant
-	tagExp := regexp.MustCompile("</?.*>")
+	tagExp := regexp.MustCompile("<.*?>")
 
 	data = tagExp.ReplaceAll(data, []byte(""))
+
 	return data, nil
 }
 
