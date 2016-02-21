@@ -88,5 +88,5 @@ func (c *Client) Matches(championshipId int64) ([]*Match, error) {
 		return nil, err
 	}
 
-	return footstatsData.matches(), nil
+	return footstatsData.matches(championshipId), nil
 }

@@ -21,6 +21,7 @@ type Match struct {
 	Date                     time.Time
 	Status                   MatchStatus
 	Round                    int
+	ChampionshipId           int64
 	HomeTeamId               int64
 	HomeTeamScore            int
 	HomeTeamPenaltyScore     int
@@ -62,7 +63,7 @@ type innerMatchData struct {
 	Data []*footstatsMatch `json:"Partida"`
 }
 
-func (m *matchData) matches() []*Match {
+func (m *matchData) matches(championshipId int64) []*Match {
 	var matches []*Match
 
 	for _, d := range m.innerData() {
@@ -112,6 +113,7 @@ func (m *matchData) matches() []*Match {
 			Date:                     date,
 			Status:                   status,
 			Round:                    round,
+			ChampionshipId:           championshipId,
 			HomeTeamId:               homeTeamId,
 			HomeTeamScore:            homeTeamScore,
 			HomeTeamPenaltyScore:     homeTeamPenaltyScore,
