@@ -90,3 +90,26 @@ func (c *Client) Matches(championshipId int64) ([]*Match, error) {
 
 	return footstatsData.matches(championshipId), nil
 }
+
+func (c *Client) Entities(championshipId int64) (*Entities, error) {
+	params := &gourl.Values{}
+	params.Set("campeonato", strconv.FormatInt(championshipId, 10))
+
+	data, err := c.makeRequest("ListaEntidades", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var footstatsData entitiesData
+	err = json.Unmarshal(data, &footstatsData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Entities{
+		teams:    footstatsData.teams(),
+		coaches:  footstatsData.coaches(),
+		referees: footstatsData.referees(),
+		stadiums: footstatsData.stadiums(),
+	}, nil
+}
