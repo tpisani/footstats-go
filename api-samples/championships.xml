@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<string xmlns="http://tempuri.org/">{
+  "Campeonato": [
+    {
+      "@Id": "444",
+      "@Nome": "Paulista 2016",
+      "@TemClassificacao": "True",
+      "@RodadaATual": "7",
+      "@Rodadas": "18",
+      "@TipoColeta": "Estatistica Completa"
+    },
+    {
+      "@Id": "434",
+      "@Nome": "Carioca 2016",
+      "@TemClassificacao": "True",
+      "@RodadaATual": "7",
+      "@Rodadas": "17",
+      "@TipoColeta": "Estatistica Parcial"
+    }
+  ]
+}</string>

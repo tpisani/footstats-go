@@ -17,7 +17,7 @@ type Client struct {
 }
 
 func (c *Client) buildURL(endpoint string, params *gourl.Values) string {
-	url := fmt.Sprintf("%s%s?usuario=%s&senha=%s",
+	url := fmt.Sprintf("%s/%s?usuario=%s&senha=%s",
 		c.baseURL, endpoint, c.user, c.password)
 
 	if params != nil {
