@@ -11,6 +11,7 @@ const (
 	NotStarted MatchStatus = iota
 	OnGoing
 	Finished
+	Cancelled
 )
 
 // https://golang.org/src/time/format.go
@@ -64,6 +65,8 @@ func (f *footstatsMatch) match(championshipId int64) *Match {
 		status = NotStarted
 	case "Partida encerrada":
 		status = Finished
+	case "Partida cancelada":
+		status = Cancelled
 	default:
 		status = OnGoing
 	}

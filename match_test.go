@@ -45,4 +45,11 @@ func TestMatchStatus(t *testing.T) {
 		t.Errorf("Expected match status Finished (%i), got %i",
 			OnGoing, match.Status)
 	}
+
+	fmatch.Status = "Partida cancelada"
+	match = fmatch.match(434)
+	if match.Status != Cancelled {
+		t.Errorf("Expected match status Cancelled (%i) for 'Partida cancelada', got %i",
+			Cancelled, match.Status)
+	}
 }
