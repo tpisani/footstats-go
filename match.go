@@ -52,21 +52,15 @@ type matchTeam struct {
 }
 
 type matchData struct {
-	Data innerMatchData `json:"Partidas"`
-}
-
-func (m *matchData) innerData() []*footstatsMatch {
-	return m.Data.Data
-}
-
-type innerMatchData struct {
-	Data []*footstatsMatch `json:"Partida"`
+	Partidas struct {
+		Partida []*footstatsMatch
+	}
 }
 
 func (m *matchData) matches(championshipId int64) []*Match {
 	var matches []*Match
 
-	for _, d := range m.innerData() {
+	for _, d := range m.Partidas.Partida {
 		footstatsId, _ := strconv.ParseInt(d.FootstatsId, 10, 64)
 		date, _ := time.Parse(footstatsDateLayout, d.Date)
 		round, _ := strconv.Atoi(d.Round)

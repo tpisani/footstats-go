@@ -60,10 +60,33 @@ func TestChampionships(t *testing.T) {
 
 	championships, err := client.Championships()
 	if err != nil {
-		t.Error("Unable to retrieve championships")
+		t.Error("Unable to retrieve championships:", err)
 	}
 
 	if clen := len(championships); clen != 2 {
 		t.Error("Expected 2 championships, got", clen)
+	}
+}
+
+func TestMatches(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/ListaPartidas", func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("campeonato")
+		if id != "434" {
+			t.Error("Expected championship 434, got", id)
+		}
+
+		writeFileToResponse(w, "api-samples/matches.xml")
+	})
+
+	matches, err := client.Matches(434)
+	if err != nil {
+		t.Error("Unable to retrieve matches:", err)
+	}
+
+	if mlen := len(matches); mlen != 4 {
+		t.Error("Expected 4 matches, got", mlen)
 	}
 }
