@@ -1,9 +1,5 @@
 package footstats
 
-import (
-	"strconv"
-)
-
 type Entities struct {
 	teams    []*Team
 	coaches  []*Coach
@@ -46,15 +42,7 @@ func (e *entitiesData) teams() []*Team {
 	var teams []*Team
 
 	for _, d := range e.Equipes.Equipe {
-		footstatsId, _ := strconv.ParseInt(d.FootstatsId, 10, 64)
-		isPlaceholder, _ := strconv.ParseBool(d.IsPlaceholder)
-
-		teams = append(teams, &Team{
-			FootstatsId:   footstatsId,
-			Name:          d.Name,
-			Initials:      d.Initials,
-			IsPlaceholder: isPlaceholder,
-		})
+		teams = append(teams, d.team())
 	}
 
 	return teams
@@ -64,12 +52,7 @@ func (e *entitiesData) coaches() []*Coach {
 	var coaches []*Coach
 
 	for _, d := range e.Tecnicos.Tecnico {
-		footstatsId, _ := strconv.ParseInt(d.FootstatsId, 10, 64)
-
-		coaches = append(coaches, &Coach{
-			FootstatsId: footstatsId,
-			Name:        d.Name,
-		})
+		coaches = append(coaches, d.coach())
 	}
 
 	return coaches
@@ -79,12 +62,7 @@ func (e *entitiesData) referees() []*Referee {
 	var referees []*Referee
 
 	for _, d := range e.Arbitros.Arbitro {
-		footstatsId, _ := strconv.ParseInt(d.FootstatsId, 10, 64)
-
-		referees = append(referees, &Referee{
-			FootstatsId: footstatsId,
-			Name:        d.Name,
-		})
+		referees = append(referees, d.referee())
 	}
 
 	return referees
@@ -94,23 +72,7 @@ func (e *entitiesData) stadiums() []*Stadium {
 	var stadiums []*Stadium
 
 	for _, d := range e.Estadios.Estadio {
-		footstatsId, _ := strconv.ParseInt(d.FootstatsId, 10, 64)
-
-		var isPlaceholder bool
-		switch d.Name {
-		case "A Definir":
-			isPlaceholder = true
-		default:
-			isPlaceholder = false
-		}
-
-		stadiums = append(stadiums, &Stadium{
-			FootstatsId:   footstatsId,
-			Name:          d.Name,
-			City:          d.City,
-			State:         d.State,
-			IsPlaceholder: isPlaceholder,
-		})
+		stadiums = append(stadiums, d.stadium())
 	}
 
 	return stadiums
