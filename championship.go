@@ -20,26 +20,30 @@ type footstatsChampionship struct {
 	Rounds            string `json:"@Rodadas"`
 }
 
+func (f *footstatsChampionship) championship() *Championship {
+	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
+	hasClassification, _ := strconv.ParseBool(f.HasClassification)
+	currentRound, _ := strconv.Atoi(f.CurrentRound)
+	rounds, _ := strconv.Atoi(f.Rounds)
+
+	return &Championship{
+		FootstatsId:       footstatsId,
+		Name:              f.Name,
+		HasClassification: hasClassification,
+		CurrentRound:      currentRound,
+		Rounds:            rounds,
+	}
+}
+
 type championshipData struct {
-	Data []*footstatsChampionship `json:"Campeonato"`
+	Campeonato []*footstatsChampionship
 }
 
 func (c *championshipData) championships() []*Championship {
 	var championships []*Championship
 
-	for _, d := range c.Data {
-		footstatsId, _ := strconv.ParseInt(d.FootstatsId, 10, 64)
-		hasClassification, _ := strconv.ParseBool(d.HasClassification)
-		currentRound, _ := strconv.Atoi(d.CurrentRound)
-		rounds, _ := strconv.Atoi(d.Rounds)
-
-		championships = append(championships, &Championship{
-			FootstatsId:       footstatsId,
-			Name:              d.Name,
-			HasClassification: hasClassification,
-			CurrentRound:      currentRound,
-			Rounds:            rounds,
-		})
+	for _, d := range c.Campeonato {
+		championships = append(championships, d.championship())
 	}
 
 	return championships
