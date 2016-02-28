@@ -108,6 +108,7 @@ func (c *Client) Entities(championshipId int64) (*Entities, error) {
 
 	return &Entities{
 		teams:    footstatsData.teams(),
+		players:  footstatsData.players(),
 		coaches:  footstatsData.coaches(),
 		referees: footstatsData.referees(),
 		stadiums: footstatsData.stadiums(),

@@ -113,6 +113,10 @@ func TestEntities(t *testing.T) {
 		t.Error("Expected 6 teams, got", elen)
 	}
 
+	if plen := len(entities.Players()); plen != 4 {
+		t.Error("Expected 4 players, got", plen)
+	}
+
 	if clen := len(entities.Coaches()); clen != 2 {
 		t.Error("Expected 2 coaches, got", clen)
 	}
