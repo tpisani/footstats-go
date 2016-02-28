@@ -75,7 +75,7 @@ func TestMatches(t *testing.T) {
 	mux.HandleFunc("/ListaPartidas", func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("campeonato")
 		if id != "434" {
-			t.Error("Expected championship 434, got", id)
+			t.Error("Expected championship ID 434, got", id)
 		}
 
 		writeFileToResponse(w, "api-samples/matches.xml")
@@ -88,5 +88,40 @@ func TestMatches(t *testing.T) {
 
 	if mlen := len(matches); mlen != 4 {
 		t.Error("Expected 4 matches, got", mlen)
+	}
+}
+
+func TestEntities(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/ListaEntidades", func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("campeonato")
+		if id != "434" {
+			t.Error("Expected championship ID 434, got", id)
+		}
+
+		writeFileToResponse(w, "api-samples/entities.xml")
+	})
+
+	entities, err := client.Entities(434)
+	if err != nil {
+		t.Error("Unable to retrieve entities:", err)
+	}
+
+	if elen := len(entities.Teams()); elen != 6 {
+		t.Error("Expected 6 teams, got", elen)
+	}
+
+	if clen := len(entities.Coaches()); clen != 2 {
+		t.Error("Expected 2 coaches, got", clen)
+	}
+
+	if rlen := len(entities.Referees()); rlen != 2 {
+		t.Error("Expected 2 referees, got", rlen)
+	}
+
+	if slen := len(entities.Stadiums()); slen != 2 {
+		t.Error("Expected 2 stadiums, got", slen)
 	}
 }
