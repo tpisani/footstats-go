@@ -29,8 +29,8 @@ func teardown() {
 	server.Close()
 }
 
-func writeFileToResponse(w http.ResponseWriter, name string) {
-	f, _ := os.Open("api-samples/championships.xml")
+func writeFileToResponse(w http.ResponseWriter, filename string) {
+	f, _ := os.Open(filename)
 	b, _ := ioutil.ReadAll(f)
 	w.Write(b)
 }
