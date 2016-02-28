@@ -2,6 +2,7 @@ package footstats
 
 type Entities struct {
 	teams    []*Team
+	players  []*Player
 	coaches  []*Coach
 	referees []*Referee
 	stadiums []*Stadium
@@ -9,6 +10,10 @@ type Entities struct {
 
 func (e *Entities) Teams() []*Team {
 	return e.teams
+}
+
+func (e *Entities) Players() []*Player {
+	return e.players
 }
 
 func (e *Entities) Coaches() []*Coach {
@@ -26,6 +31,9 @@ func (e *Entities) Stadiums() []*Stadium {
 type entitiesData struct {
 	Equipes struct {
 		Equipe []*footstatsTeam
+	}
+	Jogadores struct {
+		Jogador []*footstatsPlayer
 	}
 	Arbitros struct {
 		Arbitro []*footstatsReferee
@@ -46,6 +54,16 @@ func (e *entitiesData) teams() []*Team {
 	}
 
 	return teams
+}
+
+func (e *entitiesData) players() []*Player {
+	var players []*Player
+
+	for _, d := range e.Jogadores.Jogador {
+		players = append(players, d.player())
+	}
+
+	return players
 }
 
 func (e *entitiesData) coaches() []*Coach {
