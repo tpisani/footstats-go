@@ -42,7 +42,7 @@ func TestMatchStatus(t *testing.T) {
 	fmatch.Status = "Primeiro tempo"
 	match = fmatch.match(434)
 	if match.Status != OnGoing {
-		t.Errorf("Expected match status Finished (%i), got %i",
+		t.Errorf("Expected match status OnGoing (%i), got %i",
 			OnGoing, match.Status)
 	}
 

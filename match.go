@@ -14,6 +14,13 @@ const (
 	Cancelled
 )
 
+type MatchPeriod int
+
+const (
+	FirstHalf MatchPeriod = iota
+	SecondHalf
+)
+
 // https://golang.org/src/time/format.go
 const footstatsDateLayout = "1/2/2006 3:04:05 PM"
 
