@@ -129,3 +129,26 @@ func TestEntities(t *testing.T) {
 		t.Error("Expected 2 stadiums, got", slen)
 	}
 }
+
+func TestLiveData(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/AoVivo", func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("idpartida")
+		if id != "10999" {
+			t.Error("Expected match ID 10999, got", id)
+		}
+
+		writeFileToResponse(w, "api-samples/live.xml")
+	})
+
+	live, err := client.LiveData(10999)
+	if err != nil {
+		t.Error("Unable to retrieve goals:", err)
+	}
+
+	if glen := len(live.Goals()); glen != 2 {
+		t.Error("Expected 3 goals, got", glen)
+	}
+}

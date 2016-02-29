@@ -6,6 +6,7 @@ import (
 
 type Goal struct {
 	FootstatsId int64
+	MatchId     int64
 	PlayerId    int64
 	TeamId      int64
 	Period      MatchPeriod
@@ -14,15 +15,15 @@ type Goal struct {
 }
 
 type footstatsGoal struct {
-	FootstatsId string `json:"@Id"`
-	Period      string `json:"@Periodo"`
-	Minute      string `json:"@Momento"`
-	Type        string `json:"@Tipo"`
-	Player      *footstatsPlayer
-	Team        *footstatsTeam
+	FootstatsId string           `json:"@Id"`
+	Period      string           `json:"@Periodo"`
+	Minute      string           `json:"@Momento"`
+	Type        string           `json:"@Tipo"`
+	Player      *footstatsPlayer `json:"Jogador"`
+	Team        *footstatsTeam   `json:"Equipe"`
 }
 
-func (f *footstatsGoal) goal() *Goal {
+func (f *footstatsGoal) goal(matchId int64) *Goal {
 	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
 	minute, _ := strconv.Atoi(f.FootstatsId)
 	playerId, _ := strconv.ParseInt(f.Player.FootstatsId, 10, 64)
@@ -46,6 +47,7 @@ func (f *footstatsGoal) goal() *Goal {
 
 	return &Goal{
 		FootstatsId: footstatsId,
+		MatchId:     matchId,
 		PlayerId:    playerId,
 		TeamId:      teamId,
 		Period:      period,

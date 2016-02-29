@@ -114,3 +114,23 @@ func (c *Client) Entities(championshipId int64) (*Entities, error) {
 		stadiums: footstatsData.stadiums(),
 	}, nil
 }
+
+func (c *Client) LiveData(matchId int64) (*Live, error) {
+	params := &gourl.Values{}
+	params.Set("idpartida", strconv.FormatInt(matchId, 10))
+
+	data, err := c.makeRequest("AoVivo", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var footstatsData liveData
+	err = json.Unmarshal(data, &footstatsData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Live{
+		goals: footstatsData.goals(matchId),
+	}, nil
+}
