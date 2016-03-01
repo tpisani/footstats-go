@@ -148,7 +148,7 @@ func TestLiveData(t *testing.T) {
 		t.Error("Unable to retrieve goals:", err)
 	}
 
-	if glen := len(live.Goals()); glen != 2 {
-		t.Error("Expected 3 goals, got", glen)
+	if clen := len(live.Cards()); clen != 2 {
+		t.Error("Expected 2 cards, got", clen)
 	}
 }
