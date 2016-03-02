@@ -131,6 +131,7 @@ func (c *Client) LiveData(matchId int64) (*Live, error) {
 	}
 
 	return &Live{
-		cards: footstatsData.cards(),
+		goals: footstatsData.goals(matchId),
+		cards: footstatsData.cards(matchId),
 	}, nil
 }

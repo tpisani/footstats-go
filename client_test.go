@@ -151,4 +151,8 @@ func TestLiveData(t *testing.T) {
 	if clen := len(live.Cards()); clen != 2 {
 		t.Error("Expected 2 cards, got", clen)
 	}
+
+	if glen := len(live.Goals()); glen != 2 {
+		t.Error("Expected 2 goals, got", glen)
+	}
 }
