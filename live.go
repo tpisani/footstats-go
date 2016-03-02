@@ -31,8 +31,18 @@ type liveData struct {
 	}
 }
 
+type CardType int
+
+const (
+	RedCard CardType = iota
+	YellowCard
+)
+
 type Card struct {
 	FootstatsId int64
+	Period      MatchPeriod
+	Minute      int
+	Type        CardType
 }
 
 func cardFromData(data interface{}) (*Card, error) {
@@ -46,9 +56,29 @@ func cardFromData(data interface{}) (*Card, error) {
 	id := dataMap["@IdCartao"].(string)
 
 	footstatsId, _ := strconv.ParseInt(id, 10, 64)
+	minute, _ := strconv.Atoi(dataMap["@Minuto"].(string))
+
+	var period MatchPeriod
+	switch dataMap["@Periodo"].(string) {
+	case "Primeiro tempo":
+		period = FirstHalf
+	case "Segundo tempo":
+		period = SecondHalf
+	}
+
+	var cardType CardType
+	switch dataMap["@Tipo"].(string) {
+	case "Vermelho":
+		cardType = RedCard
+	case "Amarelo":
+		cardType = YellowCard
+	}
 
 	return &Card{
 		FootstatsId: footstatsId,
+		Period:      period,
+		Minute:      minute,
+		Type:        cardType,
 	}, nil
 }
 
