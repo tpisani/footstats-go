@@ -1,6 +1,7 @@
 package footstats
 
 import (
+	"encoding/json"
 	"strconv"
 )
 
@@ -9,16 +10,23 @@ type Referee struct {
 	Name        string
 }
 
-type footstatsReferee struct {
+type referee struct {
 	FootstatsId string `json:"@Id"`
 	Name        string `json:"@Nome"`
 }
 
-func (f *footstatsReferee) referee() *Referee {
-	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
+func (r *Referee) UnmarshalJSON(data []byte) error {
+	var o referee
 
-	return &Referee{
-		FootstatsId: footstatsId,
-		Name:        f.Name,
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
 	}
+
+	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+
+	r.FootstatsId = footstatsId
+	r.Name = o.Name
+
+	return nil
 }

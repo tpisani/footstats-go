@@ -13,9 +13,9 @@ import (
 var (
 	mux      *http.ServeMux
 	client   *Client
+	server   *httptest.Server
 	username string = "username"
 	password string = "password"
-	server   *httptest.Server
 )
 
 func setup() {
@@ -42,11 +42,11 @@ func TestAuth(t *testing.T) {
 	url := client.buildURL("test-endpoint", nil)
 
 	if !strings.Contains(url, "usuario="+username) {
-		t.Error("Missing username")
+		t.Error("missing username")
 	}
 
 	if !strings.Contains(url, "senha="+password) {
-		t.Error("Missing password")
+		t.Error("missing password")
 	}
 }
 
@@ -60,11 +60,11 @@ func TestChampionships(t *testing.T) {
 
 	championships, err := client.Championships()
 	if err != nil {
-		t.Error("Unable to retrieve championships:", err)
+		t.Fatal("unable to retrieve championships:", err)
 	}
 
 	if clen := len(championships); clen != 2 {
-		t.Error("Expected 2 championships, got", clen)
+		t.Error("expected 2 championships, got", clen)
 	}
 }
 
@@ -75,7 +75,7 @@ func TestMatches(t *testing.T) {
 	mux.HandleFunc("/ListaPartidas", func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("campeonato")
 		if id != "434" {
-			t.Error("Expected championship ID 434, got", id)
+			t.Error("expected championship ID 434, got", id)
 		}
 
 		writeFileToResponse(w, "api-samples/matches.xml")
@@ -83,11 +83,11 @@ func TestMatches(t *testing.T) {
 
 	matches, err := client.Matches(434)
 	if err != nil {
-		t.Error("Unable to retrieve matches:", err)
+		t.Fatal("unable to retrieve matches:", err)
 	}
 
 	if mlen := len(matches); mlen != 4 {
-		t.Error("Expected 4 matches, got", mlen)
+		t.Error("expected 4 matches, got", mlen)
 	}
 }
 
@@ -106,53 +106,54 @@ func TestEntities(t *testing.T) {
 
 	entities, err := client.Entities(434)
 	if err != nil {
-		t.Error("Unable to retrieve entities:", err)
+		t.Fatal("unable to retrieve entities:", err)
 	}
 
-	if elen := len(entities.Teams()); elen != 6 {
-		t.Error("Expected 6 teams, got", elen)
+	if elen := len(entities.Teams); elen != 6 {
+		t.Error("expected 6 teams, got", elen)
 	}
 
-	if plen := len(entities.Players()); plen != 4 {
-		t.Error("Expected 4 players, got", plen)
+	if plen := len(entities.Players); plen != 4 {
+		t.Error("expected 4 players, got", plen)
 	}
 
-	if clen := len(entities.Coaches()); clen != 2 {
-		t.Error("Expected 2 coaches, got", clen)
+	if clen := len(entities.Coaches); clen != 2 {
+		t.Error("expected 2 coaches, got", clen)
 	}
 
-	if rlen := len(entities.Referees()); rlen != 2 {
-		t.Error("Expected 2 referees, got", rlen)
+	if rlen := len(entities.Referees); rlen != 2 {
+		t.Error("expected 2 referees, got", rlen)
 	}
 
-	if slen := len(entities.Stadiums()); slen != 2 {
-		t.Error("Expected 2 stadiums, got", slen)
+	if slen := len(entities.Stadiums); slen != 2 {
+		t.Error("expected 2 stadiums, got", slen)
 	}
 }
 
-func TestLiveData(t *testing.T) {
+func TestMatchData(t *testing.T) {
 	setup()
 	defer teardown()
 
 	mux.HandleFunc("/AoVivo", func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("idpartida")
 		if id != "10999" {
-			t.Error("Expected match ID 10999, got", id)
+			t.Error("expected match ID 10999, got", id)
 		}
 
 		writeFileToResponse(w, "api-samples/live.xml")
 	})
 
-	live, err := client.LiveData(10999)
+	events, err := client.MatchData(10999)
 	if err != nil {
-		t.Error("Unable to retrieve goals:", err)
+		t.Fatal("unable to retrieve match events:", err)
 	}
 
-	if clen := len(live.Cards()); clen != 2 {
-		t.Error("Expected 2 cards, got", clen)
+	if glen := len(events.Goals); glen != 2 {
+		t.Error("expected 2 goals, got", glen)
 	}
 
-	if glen := len(live.Goals()); glen != 2 {
-		t.Error("Expected 2 goals, got", glen)
+	if clen := len(events.Cards); clen != 3 {
+		t.Error("expected 3 cards, got", clen)
 	}
+
 }

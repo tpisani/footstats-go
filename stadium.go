@@ -1,6 +1,7 @@
 package footstats
 
 import (
+	"encoding/json"
 	"strconv"
 )
 
@@ -12,29 +13,34 @@ type Stadium struct {
 	IsPlaceholder bool
 }
 
-type footstatsStadium struct {
+type stadium struct {
 	FootstatsId string `json:"@Id"`
 	Name        string `json:"@Nome"`
 	City        string `json:"@Cidade"`
 	State       string `json:"@Estado"`
 }
 
-func (f *footstatsStadium) stadium() *Stadium {
-	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
+func (s *Stadium) UnmarshalJSON(data []byte) error {
+	var o stadium
 
-	var isPlaceholder bool
-	switch f.Name {
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+
+	s.FootstatsId = footstatsId
+	s.Name = o.Name
+	s.City = o.City
+	s.State = o.State
+
+	switch o.Name {
 	case "A Definir":
-		isPlaceholder = true
+		s.IsPlaceholder = true
 	default:
-		isPlaceholder = false
+		s.IsPlaceholder = false
 	}
 
-	return &Stadium{
-		FootstatsId:   footstatsId,
-		Name:          f.Name,
-		City:          f.City,
-		State:         f.State,
-		IsPlaceholder: isPlaceholder,
-	}
+	return nil
 }

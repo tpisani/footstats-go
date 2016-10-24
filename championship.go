@@ -1,6 +1,7 @@
 package footstats
 
 import (
+	"encoding/json"
 	"strconv"
 )
 
@@ -9,42 +10,38 @@ type Championship struct {
 	Name              string
 	HasClassification bool
 	CurrentRound      int
-	Rounds            int
+	TotalRounds       int
 }
 
-type footstatsChampionship struct {
+type championship struct {
 	FootstatsId       string `json:"@Id"`
 	Name              string `json:"@Nome"`
 	HasClassification string `json:"@TemClassificacao"`
 	CurrentRound      string `json:"@RodadaAtual"`
-	Rounds            string `json:"@Rodadas"`
+	TotalRounds       string `json:"@Rodadas"`
 }
 
-func (f *footstatsChampionship) championship() *Championship {
-	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
-	hasClassification, _ := strconv.ParseBool(f.HasClassification)
-	currentRound, _ := strconv.Atoi(f.CurrentRound)
-	rounds, _ := strconv.Atoi(f.Rounds)
-
-	return &Championship{
-		FootstatsId:       footstatsId,
-		Name:              f.Name,
-		HasClassification: hasClassification,
-		CurrentRound:      currentRound,
-		Rounds:            rounds,
-	}
+type championshipWrapper struct {
+	Championships []*Championship `json:"Campeonato"`
 }
 
-type championshipData struct {
-	Campeonato []*footstatsChampionship
-}
+func (c *Championship) UnmarshalJSON(data []byte) error {
+	var o championship
 
-func (c *championshipData) championships() []*Championship {
-	var championships []*Championship
-
-	for _, d := range c.Campeonato {
-		championships = append(championships, d.championship())
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
 	}
 
-	return championships
+	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	hasClassification, _ := strconv.ParseBool(o.HasClassification)
+	currentRound, _ := strconv.Atoi(o.CurrentRound)
+	totalRounds, _ := strconv.Atoi(o.TotalRounds)
+
+	c.FootstatsId = footstatsId
+	c.HasClassification = hasClassification
+	c.CurrentRound = currentRound
+	c.TotalRounds = totalRounds
+
+	return nil
 }

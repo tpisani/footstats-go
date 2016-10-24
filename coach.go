@@ -1,6 +1,7 @@
 package footstats
 
 import (
+	"encoding/json"
 	"strconv"
 )
 
@@ -9,16 +10,23 @@ type Coach struct {
 	Name        string
 }
 
-type footstatsCoach struct {
+type coach struct {
 	FootstatsId string `json:"@Id"`
 	Name        string `json:"@Nome"`
 }
 
-func (f *footstatsCoach) coach() *Coach {
-	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
+func (c *Coach) UnmarshalJSON(data []byte) error {
+	var o coach
 
-	return &Coach{
-		FootstatsId: footstatsId,
-		Name:        f.Name,
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
 	}
+
+	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+
+	c.FootstatsId = footstatsId
+	c.Name = o.Name
+
+	return nil
 }

@@ -1,15 +1,19 @@
 package footstats
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 )
+
+// https://golang.org/src/time/format.go
+const footstatsDateLayout = "1/2/2006 3:04:05 PM"
 
 type MatchStatus int
 
 const (
 	NotStarted MatchStatus = iota
-	OnGoing
+	InProgress
 	Finished
 	Cancelled
 )
@@ -21,15 +25,11 @@ const (
 	SecondHalf
 )
 
-// https://golang.org/src/time/format.go
-const footstatsDateLayout = "1/2/2006 3:04:05 PM"
-
 type Match struct {
 	FootstatsId              int64
 	Date                     time.Time
 	Status                   MatchStatus
 	Round                    int
-	ChampionshipId           int64
 	HomeTeamId               int64
 	HomeTeamScore            int
 	HomeTeamPenaltyScore     int
@@ -41,7 +41,20 @@ type Match struct {
 	HasLiveCoverage          bool
 }
 
-type footstatsMatch struct {
+type matchWrapper struct {
+	Matches struct {
+		Match []*Match `json:"Partida"`
+	} `json:"Partidas"`
+}
+
+type matchTeam struct {
+	FootstatsId  string `json:"@Id"`
+	Score        string `json:"@Placar"`
+	PenaltyScore string `json:"@PlacarPenaltis"`
+	Type         string `json:"@Tipo"`
+}
+
+type match struct {
 	FootstatsId     string       `json:"@Id"`
 	Date            string       `json:"Data"`
 	Status          string       `json:"Status"`
@@ -52,22 +65,22 @@ type footstatsMatch struct {
 	HasLiveCoverage string       `json:"AoVivo"`
 }
 
-type matchTeam struct {
-	FootstatsId  string `json:"@Id"`
-	Score        string `json:"@Placar"`
-	PenaltyScore string `json:"@PlacarPenaltis"`
-	Type         string `json:"@Tipo"`
-}
+func (m *Match) UnmarshalJSON(data []byte) error {
+	var o match
 
-func (f *footstatsMatch) match(championshipId int64) *Match {
-	footstatsId, _ := strconv.ParseInt(f.FootstatsId, 10, 64)
-	date, _ := time.Parse(footstatsDateLayout, f.Date)
-	round, _ := strconv.Atoi(f.Round)
-	stadiumId, _ := strconv.ParseInt(f.StadiumId, 10, 64)
-	refereeId, _ := strconv.ParseInt(f.RefereeId, 10, 64)
+	err := json.Unmarshal(data, &o)
+	if err != nil {
+		return err
+	}
+
+	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	date, _ := time.Parse(footstatsDateLayout, o.Date)
+	round, _ := strconv.Atoi(o.Round)
+	stadiumId, _ := strconv.ParseInt(o.StadiumId, 10, 64)
+	refereeId, _ := strconv.ParseInt(o.RefereeId, 10, 64)
 
 	var status MatchStatus
-	switch f.Status {
+	switch o.Status {
 	case "Partida não iniciada":
 		status = NotStarted
 	case "Partida encerrada":
@@ -75,11 +88,11 @@ func (f *footstatsMatch) match(championshipId int64) *Match {
 	case "Partida cancelada":
 		status = Cancelled
 	default:
-		status = OnGoing
+		status = InProgress
 	}
 
 	var hasLiveCoverage bool
-	switch f.HasLiveCoverage {
+	switch o.HasLiveCoverage {
 	case "Sim":
 		hasLiveCoverage = true
 	default:
@@ -87,7 +100,7 @@ func (f *footstatsMatch) match(championshipId int64) *Match {
 	}
 
 	var homeTeam, visitingTeam *matchTeam
-	for _, t := range f.Teams {
+	for _, t := range o.Teams {
 		if t.Type == "Mandante" {
 			homeTeam = t
 		} else {
@@ -103,36 +116,24 @@ func (f *footstatsMatch) match(championshipId int64) *Match {
 	visitingTeamScore, _ := strconv.Atoi(visitingTeam.Score)
 	visitingTeamPenaltyScore, _ := strconv.Atoi(visitingTeam.PenaltyScore)
 
-	return &Match{
-		FootstatsId:              footstatsId,
-		Date:                     date,
-		Status:                   status,
-		Round:                    round,
-		ChampionshipId:           championshipId,
-		HomeTeamId:               homeTeamId,
-		HomeTeamScore:            homeTeamScore,
-		HomeTeamPenaltyScore:     homeTeamPenaltyScore,
-		VisitingTeamId:           visitingTeamId,
-		VisitingTeamScore:        visitingTeamScore,
-		VisitingTeamPenaltyScore: visitingTeamPenaltyScore,
-		StadiumId:                stadiumId,
-		RefereeId:                refereeId,
-		HasLiveCoverage:          hasLiveCoverage,
-	}
-}
+	m.FootstatsId = footstatsId
+	m.Date = date
 
-type matchData struct {
-	Partidas struct {
-		Partida []*footstatsMatch
-	}
-}
+	m.Status = status
 
-func (m *matchData) matches(championshipId int64) []*Match {
-	var matches []*Match
+	m.Round = round
+	m.StadiumId = stadiumId
+	m.RefereeId = refereeId
 
-	for _, d := range m.Partidas.Partida {
-		matches = append(matches, d.match(championshipId))
-	}
+	m.HomeTeamId = homeTeamId
+	m.HomeTeamScore = homeTeamScore
+	m.HomeTeamPenaltyScore = homeTeamPenaltyScore
 
-	return matches
+	m.VisitingTeamId = visitingTeamId
+	m.VisitingTeamScore = visitingTeamScore
+	m.VisitingTeamPenaltyScore = visitingTeamPenaltyScore
+
+	m.HasLiveCoverage = hasLiveCoverage
+
+	return nil
 }
