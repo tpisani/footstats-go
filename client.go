@@ -5,49 +5,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	gourl "net/url"
+	"net/url"
 	"regexp"
 	"strconv"
 )
+
+var tagExp = regexp.MustCompile("<.*?>")
 
 type Client struct {
 	baseURL  string
 	user     string
 	password string
-}
-
-func (c *Client) buildURL(endpoint string, params *gourl.Values) string {
-	url := fmt.Sprintf("%s%s?usuario=%s&senha=%s",
-		c.baseURL, endpoint, c.user, c.password)
-
-	if params != nil {
-		url = fmt.Sprintf("%s&%s", url, params.Encode())
-	}
-
-	return url
-}
-
-func (c *Client) makeRequest(endpoint string, params *gourl.Values) ([]byte, error) {
-	url := c.buildURL(endpoint, params)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	// TODO: Make this a constant somehow. It causes a build
-	// error when put on const declarations:
-	// const initializer regexp.MustCompile(...) is not a constant
-	tagExp := regexp.MustCompile("<.*?>")
-
-	data = tagExp.ReplaceAll(data, []byte(""))
-
-	return data, nil
 }
 
 func NewClient(baseURL, user, password string) *Client {
@@ -58,23 +26,52 @@ func NewClient(baseURL, user, password string) *Client {
 	}
 }
 
+func (c *Client) buildURL(endpoint string, params *url.Values) string {
+	u := fmt.Sprintf("%s/%s?usuario=%s&senha=%s",
+		c.baseURL, endpoint, c.user, c.password)
+
+	if params != nil {
+		u = fmt.Sprintf("%s&%s", u, params.Encode())
+	}
+
+	return u
+}
+
+func (c *Client) makeRequest(endpoint string, params *url.Values) ([]byte, error) {
+	u := c.buildURL(endpoint, params)
+
+	resp, err := http.Get(u)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data = tagExp.ReplaceAll(data, []byte(""))
+
+	return data, nil
+}
+
 func (c *Client) Championships() ([]*Championship, error) {
 	data, err := c.makeRequest("ListaCampeonatos", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var footstatsData championshipData
-	err = json.Unmarshal(data, &footstatsData)
+	var wrapper championshipWrapper
+	err = json.Unmarshal(data, &wrapper)
 	if err != nil {
 		return nil, err
 	}
 
-	return footstatsData.championships(), nil
+	return wrapper.Championships, nil
 }
 
 func (c *Client) Matches(championshipId int64) ([]*Match, error) {
-	params := &gourl.Values{}
+	params := &url.Values{}
 	params.Set("campeonato", strconv.FormatInt(championshipId, 10))
 
 	data, err := c.makeRequest("ListaPartidas", params)
@@ -82,11 +79,53 @@ func (c *Client) Matches(championshipId int64) ([]*Match, error) {
 		return nil, err
 	}
 
-	var footstatsData matchData
-	err = json.Unmarshal(data, &footstatsData)
+	var wrapper matchWrapper
+	err = json.Unmarshal(data, &wrapper)
 	if err != nil {
 		return nil, err
 	}
 
-	return footstatsData.matches(championshipId), nil
+	return wrapper.Matches.Match, nil
+}
+
+func (c *Client) Entities(championshipId int64) (*Entities, error) {
+	params := &url.Values{}
+	params.Set("campeonato", strconv.FormatInt(championshipId, 10))
+
+	data, err := c.makeRequest("ListaEntidades", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var wrapper entitiesWrapper
+	err = json.Unmarshal(data, &wrapper)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Entities{
+		Teams:    wrapper.Teams.Team,
+		Players:  wrapper.Players.Player,
+		Coaches:  wrapper.Coaches.Coach,
+		Referees: wrapper.Referees.Referee,
+		Stadiums: wrapper.Stadiums.Stadium,
+	}, nil
+}
+
+func (c *Client) MatchData(matchId int64) (*MatchData, error) {
+	params := &url.Values{}
+	params.Set("idpartida", strconv.FormatInt(matchId, 10))
+
+	data, err := c.makeRequest("AoVivo", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var events *MatchData
+	err = json.Unmarshal(data, &events)
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
