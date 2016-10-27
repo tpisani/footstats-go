@@ -112,7 +112,7 @@ func (c *Client) Entities(championshipId int) (*Entities, error) {
 	}, nil
 }
 
-func (c *Client) MatchData(matchId int) (*MatchData, error) {
+func (c *Client) MatchEvents(matchId int) (*MatchEvents, error) {
 	params := &url.Values{}
 	params.Set("idpartida", strconv.Itoa(matchId))
 
@@ -121,7 +121,7 @@ func (c *Client) MatchData(matchId int) (*MatchData, error) {
 		return nil, err
 	}
 
-	var events *MatchData
+	var events *MatchEvents
 	err = json.Unmarshal(data, &events)
 	if err != nil {
 		return nil, err

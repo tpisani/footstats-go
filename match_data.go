@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 )
 
-type MatchData struct {
+type MatchEvents struct {
 	Goals []*Goal
 	Cards []*Card
 }
 
-type matchData struct {
+type matchEvents struct {
 	Championship struct {
 		Match struct {
 			Goals *struct {
@@ -27,8 +27,8 @@ type matchData struct {
 	} `json:"Campeonato"`
 }
 
-func (m *MatchData) UnmarshalJSON(data []byte) error {
-	var o matchData
+func (m *MatchEvents) UnmarshalJSON(data []byte) error {
+	var o matchEvents
 
 	err := json.Unmarshal(data, &o)
 	if err != nil {
