@@ -13,8 +13,8 @@ const (
 )
 
 type Card struct {
-	FootstatsId int64
-	PlayerId    int64
+	FootstatsId int
+	PlayerId    int
 	Minute      int
 	Period      MatchPeriod
 	Type        CardType
@@ -36,8 +36,8 @@ func (c *Card) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
-	playerId, _ := strconv.ParseInt(o.PlayerId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	playerId, _ := strconv.Atoi(o.PlayerId)
 	minute, _ := strconv.Atoi(o.Minute)
 
 	c.FootstatsId = footstatsId

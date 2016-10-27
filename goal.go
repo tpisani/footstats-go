@@ -6,9 +6,9 @@ import (
 )
 
 type Goal struct {
-	FootstatsId int64
-	PlayerId    int64
-	TeamId      int64
+	FootstatsId int
+	PlayerId    int
+	TeamId      int
 	Period      MatchPeriod
 	Minute      int
 	Own         bool
@@ -31,7 +31,7 @@ func (g *Goal) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
 	minute, _ := strconv.Atoi(o.Minute)
 
 	g.FootstatsId = footstatsId

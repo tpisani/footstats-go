@@ -26,18 +26,18 @@ const (
 )
 
 type Match struct {
-	FootstatsId              int64
+	FootstatsId              int
 	Date                     time.Time
 	Status                   MatchStatus
 	Round                    int
-	HomeTeamId               int64
+	HomeTeamId               int
 	HomeTeamScore            int
 	HomeTeamPenaltyScore     int
-	VisitingTeamId           int64
+	VisitingTeamId           int
 	VisitingTeamScore        int
 	VisitingTeamPenaltyScore int
-	StadiumId                int64
-	RefereeId                int64
+	StadiumId                int
+	RefereeId                int
 	HasLiveCoverage          bool
 }
 
@@ -73,11 +73,11 @@ func (m *Match) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
 	date, _ := time.Parse(footstatsDateLayout, o.Date)
 	round, _ := strconv.Atoi(o.Round)
-	stadiumId, _ := strconv.ParseInt(o.StadiumId, 10, 64)
-	refereeId, _ := strconv.ParseInt(o.RefereeId, 10, 64)
+	stadiumId, _ := strconv.Atoi(o.StadiumId)
+	refereeId, _ := strconv.Atoi(o.RefereeId)
 
 	var status MatchStatus
 	switch o.Status {
@@ -108,11 +108,11 @@ func (m *Match) UnmarshalJSON(data []byte) error {
 		}
 	}
 
-	homeTeamId, _ := strconv.ParseInt(homeTeam.FootstatsId, 10, 64)
+	homeTeamId, _ := strconv.Atoi(homeTeam.FootstatsId)
 	homeTeamScore, _ := strconv.Atoi(homeTeam.Score)
 	homeTeamPenaltyScore, _ := strconv.Atoi(homeTeam.PenaltyScore)
 
-	visitingTeamId, _ := strconv.ParseInt(visitingTeam.FootstatsId, 10, 64)
+	visitingTeamId, _ := strconv.Atoi(visitingTeam.FootstatsId)
 	visitingTeamScore, _ := strconv.Atoi(visitingTeam.Score)
 	visitingTeamPenaltyScore, _ := strconv.Atoi(visitingTeam.PenaltyScore)
 

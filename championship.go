@@ -6,7 +6,7 @@ import (
 )
 
 type Championship struct {
-	FootstatsId       int64
+	FootstatsId       int
 	Name              string
 	HasClassification bool
 	CurrentRound      int
@@ -33,7 +33,7 @@ func (c *Championship) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
 	hasClassification, _ := strconv.ParseBool(o.HasClassification)
 	currentRound, _ := strconv.Atoi(o.CurrentRound)
 	totalRounds, _ := strconv.Atoi(o.TotalRounds)

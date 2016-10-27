@@ -6,7 +6,7 @@ import (
 )
 
 type Stadium struct {
-	FootstatsId   int64
+	FootstatsId   int
 	Name          string
 	City          string
 	State         string
@@ -28,7 +28,7 @@ func (s *Stadium) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
 
 	s.FootstatsId = footstatsId
 	s.Name = o.Name

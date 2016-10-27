@@ -6,9 +6,9 @@ import (
 )
 
 type Player struct {
-	FootstatsId int64
+	FootstatsId int
 	Name        string
-	TeamId      int64
+	TeamId      int
 }
 
 type player struct {
@@ -25,8 +25,8 @@ func (p *Player) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
-	teamId, _ := strconv.ParseInt(o.TeamId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	teamId, _ := strconv.Atoi(o.TeamId)
 
 	p.FootstatsId = footstatsId
 	p.Name = o.Name

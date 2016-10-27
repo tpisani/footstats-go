@@ -6,7 +6,7 @@ import (
 )
 
 type Referee struct {
-	FootstatsId int64
+	FootstatsId int
 	Name        string
 }
 
@@ -23,7 +23,7 @@ func (r *Referee) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.ParseInt(o.FootstatsId, 10, 64)
+	footstatsId, _ := strconv.Atoi(o.FootstatsId)
 
 	r.FootstatsId = footstatsId
 	r.Name = o.Name
