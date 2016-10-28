@@ -1,6 +1,7 @@
 package store
 
 import (
+	"sync"
 	"time"
 
 	"footstats-go"
@@ -20,11 +21,19 @@ func New(c *footstats.Client) *Store {
 	}
 }
 
+func (s *Store) ParticipatingTeams() map[int]*footstats.Team {
+	return s.teams
+}
+
 func (s *Store) TodaysMatches() map[int]*footstats.Match {
 	return s.todaysMatches
 }
 
-func (s *Store) Hydrate() error {
+func (s *Store) ClearGoals() {
+	s.goalsIDs = []int{}
+}
+
+func (s *Store) LoadMatches() error {
 	championships, err := s.client.Championships()
 	if err != nil {
 		return err
@@ -35,37 +44,67 @@ func (s *Store) Hydrate() error {
 
 	curYear, curMonth, curDay := time.Now().Date()
 
+	wg := &sync.WaitGroup{}
+
 	for _, championship := range championships {
-		matches, err := s.client.Matches(championship.FootstatsID)
-		if err != nil {
-			return err
-		}
+		wg.Add(1)
 
-		var teamIDs []int
+		go func(c *footstats.Championship) {
+			defer wg.Done()
 
-		for _, m := range matches {
-			year, month, day := m.ScheduledTo.Date()
-			if curYear == year && curMonth == month && curDay == day {
-				todaysMatches[m.FootstatsID] = m
-				teamIDs = append(teamIDs, m.HomeTeamID, m.VisitingTeamID)
-			}
-		}
+			innerWg := &sync.WaitGroup{}
+			innerWg.Add(2)
 
-		entities, err := s.client.Entities(championship.FootstatsID)
-		if err != nil {
-			return err
-		}
+			var teamIDs []int
 
-		for _, t := range entities.Teams {
-			for _, id := range teamIDs {
-				if t.FootstatsID == id {
-					teams[t.FootstatsID] = t
+			go func() {
+
+				defer innerWg.Done()
+
+				matches, err := s.client.Matches(c.FootstatsID)
+				if err != nil {
+					return
+				}
+
+				for _, m := range matches {
+					year, month, day := m.ScheduledTo.Date()
+					if curYear == year && curMonth == month && curDay == day {
+						todaysMatches[m.FootstatsID] = m
+						teamIDs = append(teamIDs, m.HomeTeamID, m.VisitingTeamID)
+					}
+				}
+
+			}()
+
+			var entities *footstats.Entities
+
+			go func() {
+
+				defer innerWg.Done()
+
+				e, err := s.client.Entities(c.FootstatsID)
+				if err == nil {
+					entities = e
+				}
+
+			}()
+
+			innerWg.Wait()
+
+			for _, t := range entities.Teams {
+				for _, id := range teamIDs {
+					if t.FootstatsID == id {
+						teams[t.FootstatsID] = t
+					}
 				}
 			}
-		}
+
+		}(championship)
+
 	}
 
-	s.goalsIDs = []int{}
+	wg.Wait()
+
 	s.teams = teams
 	s.todaysMatches = todaysMatches
 
