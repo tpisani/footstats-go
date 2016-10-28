@@ -8,9 +8,11 @@ import (
 )
 
 type Store struct {
+	initialized bool
+
 	client *footstats.Client
 
-	goalsIDs      []int
+	goalIDs       []int
 	teams         map[int]*footstats.Team
 	todaysMatches map[int]*footstats.Match
 }
@@ -30,7 +32,7 @@ func (s *Store) TodaysMatches() map[int]*footstats.Match {
 }
 
 func (s *Store) ClearGoals() {
-	s.goalsIDs = []int{}
+	s.goalIDs = []int{}
 }
 
 func (s *Store) LoadMatches() error {
@@ -109,4 +111,56 @@ func (s *Store) LoadMatches() error {
 	s.todaysMatches = todaysMatches
 
 	return nil
+}
+
+func (s *Store) addGoal(g *footstats.Goal) bool {
+	for _, id := range s.goalIDs {
+		if g.FootstatsID == id {
+			return false
+		}
+	}
+
+	s.goalIDs = append(s.goalIDs, g.FootstatsID)
+	return true
+}
+
+func (s *Store) GoalEvents() chan *GoalEvent {
+	c := make(chan *GoalEvent)
+
+	go func() {
+
+		wg := &sync.WaitGroup{}
+
+		for _, m := range s.todaysMatches {
+			data, err := s.client.MatchEvents(m.FootstatsID)
+			if err != nil {
+				continue
+			}
+
+			wg.Add(1)
+			go func(m *footstats.Match) {
+				defer wg.Done()
+
+				for _, g := range data.Goals {
+					if s.addGoal(g) && s.initialized {
+						c <- &GoalEvent{
+							HomeTeamScore:     data.HomeTeamScore,
+							VisitingTeamScore: data.VisitingTeamScore,
+							Match:             m,
+							Team:              s.teams[g.TeamID],
+							Goal:              g,
+						}
+					}
+				}
+			}(m)
+
+		}
+
+		wg.Wait()
+
+		s.initialized = true
+		close(c)
+	}()
+
+	return c
 }
