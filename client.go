@@ -70,9 +70,9 @@ func (c *Client) Championships() ([]*Championship, error) {
 	return wrapper.Championships, nil
 }
 
-func (c *Client) Matches(championshipId int) ([]*Match, error) {
+func (c *Client) Matches(championshipID int) ([]*Match, error) {
 	params := &url.Values{}
-	params.Set("campeonato", strconv.Itoa(championshipId))
+	params.Set("campeonato", strconv.Itoa(championshipID))
 
 	data, err := c.makeRequest("ListaPartidas", params)
 	if err != nil {
@@ -88,9 +88,9 @@ func (c *Client) Matches(championshipId int) ([]*Match, error) {
 	return wrapper.Matches.Match, nil
 }
 
-func (c *Client) Entities(championshipId int) (*Entities, error) {
+func (c *Client) Entities(championshipID int) (*Entities, error) {
 	params := &url.Values{}
-	params.Set("campeonato", strconv.Itoa(championshipId))
+	params.Set("campeonato", strconv.Itoa(championshipID))
 
 	data, err := c.makeRequest("ListaEntidades", params)
 	if err != nil {
@@ -112,9 +112,9 @@ func (c *Client) Entities(championshipId int) (*Entities, error) {
 	}, nil
 }
 
-func (c *Client) MatchEvents(matchId int) (*MatchEvents, error) {
+func (c *Client) MatchEvents(matchID int) (*MatchEvents, error) {
 	params := &url.Values{}
-	params.Set("idpartida", strconv.Itoa(matchId))
+	params.Set("idpartida", strconv.Itoa(matchID))
 
 	data, err := c.makeRequest("AoVivo", params)
 	if err != nil {

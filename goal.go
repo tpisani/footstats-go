@@ -6,17 +6,17 @@ import (
 )
 
 type Goal struct {
-	FootstatsId int
-	PlayerId    int
+	FootstatsID int
+	PlayerID    int
 	PlayerName  string
-	TeamId      int
+	TeamID      int
 	Period      MatchPeriod
 	Minute      int
 	Own         bool
 }
 
 type goal struct {
-	FootstatsId string  `json:"@Id"`
+	FootstatsID string  `json:"@Id"`
 	Period      string  `json:"@Periodo"`
 	Minute      string  `json:"@Momento"`
 	Type        string  `json:"@Tipo"`
@@ -32,14 +32,14 @@ func (g *Goal) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	footstatsID, _ := strconv.Atoi(o.FootstatsID)
 	minute, _ := strconv.Atoi(o.Minute)
 
-	g.FootstatsId = footstatsId
+	g.FootstatsID = footstatsID
 	g.Minute = minute
-	g.PlayerId = o.Player.FootstatsId
+	g.PlayerID = o.Player.FootstatsID
 	g.PlayerName = o.Player.Name
-	g.TeamId = o.Team.FootstatsId
+	g.TeamID = o.Team.FootstatsID
 
 	switch o.Period {
 	case "Primeiro tempo":

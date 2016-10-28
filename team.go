@@ -6,14 +6,14 @@ import (
 )
 
 type Team struct {
-	FootstatsId   int
+	FootstatsID   int
 	Name          string
 	Initials      string
 	IsPlaceholder bool
 }
 
 type team struct {
-	FootstatsId   string `json:"@Id"`
+	FootstatsID   string `json:"@Id"`
 	Name          string `json:"@Nome"`
 	Initials      string `json:"@Sigla"`
 	IsPlaceholder string `json:"@EquipeFantasia"`
@@ -27,10 +27,10 @@ func (t *Team) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	footstatsID, _ := strconv.Atoi(o.FootstatsID)
 	isPlaceholder, _ := strconv.ParseBool(o.IsPlaceholder)
 
-	t.FootstatsId = footstatsId
+	t.FootstatsID = footstatsID
 	t.Name = o.Name
 	t.Initials = o.Initials
 	t.IsPlaceholder = isPlaceholder

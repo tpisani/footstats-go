@@ -6,12 +6,12 @@ import (
 )
 
 type Referee struct {
-	FootstatsId int
+	FootstatsID int
 	Name        string
 }
 
 type referee struct {
-	FootstatsId string `json:"@Id"`
+	FootstatsID string `json:"@Id"`
 	Name        string `json:"@Nome"`
 }
 
@@ -23,9 +23,9 @@ func (r *Referee) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	footstatsID, _ := strconv.Atoi(o.FootstatsID)
 
-	r.FootstatsId = footstatsId
+	r.FootstatsID = footstatsID
 	r.Name = o.Name
 
 	return nil

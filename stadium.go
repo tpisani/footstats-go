@@ -6,7 +6,7 @@ import (
 )
 
 type Stadium struct {
-	FootstatsId   int
+	FootstatsID   int
 	Name          string
 	City          string
 	State         string
@@ -14,7 +14,7 @@ type Stadium struct {
 }
 
 type stadium struct {
-	FootstatsId string `json:"@Id"`
+	FootstatsID string `json:"@Id"`
 	Name        string `json:"@Nome"`
 	City        string `json:"@Cidade"`
 	State       string `json:"@Estado"`
@@ -28,9 +28,9 @@ func (s *Stadium) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	footstatsID, _ := strconv.Atoi(o.FootstatsID)
 
-	s.FootstatsId = footstatsId
+	s.FootstatsID = footstatsID
 	s.Name = o.Name
 	s.City = o.City
 	s.State = o.State

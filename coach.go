@@ -6,12 +6,12 @@ import (
 )
 
 type Coach struct {
-	FootstatsId int
+	FootstatsID int
 	Name        string
 }
 
 type coach struct {
-	FootstatsId string `json:"@Id"`
+	FootstatsID string `json:"@Id"`
 	Name        string `json:"@Nome"`
 }
 
@@ -23,9 +23,9 @@ func (c *Coach) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsId, _ := strconv.Atoi(o.FootstatsId)
+	footstatsID, _ := strconv.Atoi(o.FootstatsID)
 
-	c.FootstatsId = footstatsId
+	c.FootstatsID = footstatsID
 	c.Name = o.Name
 
 	return nil
