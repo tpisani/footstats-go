@@ -8,6 +8,7 @@ import (
 type Goal struct {
 	FootstatsId int
 	PlayerId    int
+	PlayerName  string
 	TeamId      int
 	Period      MatchPeriod
 	Minute      int
@@ -37,6 +38,7 @@ func (g *Goal) UnmarshalJSON(data []byte) error {
 	g.FootstatsId = footstatsId
 	g.Minute = minute
 	g.PlayerId = o.Player.FootstatsId
+	g.PlayerName = o.Player.Name
 	g.TeamId = o.Team.FootstatsId
 
 	switch o.Period {
