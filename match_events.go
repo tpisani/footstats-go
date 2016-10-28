@@ -3,9 +3,13 @@ package footstats
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
 )
 
 type MatchEvents struct {
+	HomeTeamScore     int
+	VisitingTeamScore int
+
 	Goals []*Goal
 	Cards []*Card
 }
@@ -13,7 +17,9 @@ type MatchEvents struct {
 type matchEvents struct {
 	Championship struct {
 		Match struct {
-			Goals *struct {
+			HomeTeamScore     string `json:"PlacarMandante"`
+			VisitingTeamScore string `json:"PlacarVisitante"`
+			Goals             *struct {
 				Goal *json.RawMessage `json:"Gol"`
 			} `json:"Gols"`
 		} `json:"Partida"`
@@ -77,6 +83,12 @@ func (m *MatchEvents) UnmarshalJSON(data []byte) error {
 			cards = append(cards, card)
 		}
 	}
+
+	homeTeamScore, _ := strconv.Atoi(o.Championship.Match.HomeTeamScore)
+	visitingTeamScore, _ := strconv.Atoi(o.Championship.Match.VisitingTeamScore)
+
+	m.HomeTeamScore = homeTeamScore
+	m.VisitingTeamScore = visitingTeamScore
 
 	m.Goals = goals
 	m.Cards = cards
