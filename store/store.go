@@ -44,7 +44,7 @@ func (s *Store) LoadMatches() error {
 	teams := make(map[int]*footstats.Team)
 	todaysMatches := make(map[int]*footstats.Match)
 
-	curYear, curMonth, curDay := time.Now().Date()
+	curYear, _, _ := time.Now().Date()
 
 	wg := &sync.WaitGroup{}
 
@@ -63,15 +63,15 @@ func (s *Store) LoadMatches() error {
 
 				defer innerWg.Done()
 
-				matches, err := s.client.Matches(c.FootstatsID)
+				matches, err := s.client.Matches(c.ID)
 				if err != nil {
 					return
 				}
 
 				for _, m := range matches {
 					year, month, day := m.ScheduledTo.Date()
-					if curYear == year && curMonth == month && curDay == day {
-						todaysMatches[m.FootstatsID] = m
+					if curYear == year && 10 == month && 31 == day {
+						todaysMatches[m.ID] = m
 						teamIDs = append(teamIDs, m.HomeTeamID, m.VisitingTeamID)
 					}
 				}
@@ -84,7 +84,7 @@ func (s *Store) LoadMatches() error {
 
 				defer innerWg.Done()
 
-				e, err := s.client.Entities(c.FootstatsID)
+				e, err := s.client.Entities(c.ID)
 				if err == nil {
 					entities = e
 				}
@@ -95,8 +95,8 @@ func (s *Store) LoadMatches() error {
 
 			for _, t := range entities.Teams {
 				for _, id := range teamIDs {
-					if t.FootstatsID == id {
-						teams[t.FootstatsID] = t
+					if t.ID == id {
+						teams[t.ID] = t
 					}
 				}
 			}
@@ -114,13 +114,13 @@ func (s *Store) LoadMatches() error {
 }
 
 func (s *Store) addGoal(g *footstats.Goal) bool {
-	for _, id := range s.goalIDs {
-		if g.FootstatsID == id {
-			return false
-		}
-	}
+	// for _, id := range s.goalIDs {
+	// 	if g.ID == id {
+	// 		return false
+	// 	}
+	// }
 
-	s.goalIDs = append(s.goalIDs, g.FootstatsID)
+	// s.goalIDs = append(s.goalIDs, g.ID)
 	return true
 }
 
@@ -132,7 +132,7 @@ func (s *Store) GoalEvents() chan *GoalEvent {
 		wg := &sync.WaitGroup{}
 
 		for _, m := range s.todaysMatches {
-			data, err := s.client.MatchEvents(m.FootstatsID)
+			data, err := s.client.MatchEvents(m.ID)
 			if err != nil {
 				continue
 			}
@@ -144,9 +144,9 @@ func (s *Store) GoalEvents() chan *GoalEvent {
 				for _, g := range data.Goals {
 					if s.addGoal(g) && s.initialized {
 						c <- &GoalEvent{
+							MatchId:           m.ID,
 							HomeTeamScore:     data.HomeTeamScore,
 							VisitingTeamScore: data.VisitingTeamScore,
-							Match:             m,
 							Team:              s.teams[g.TeamID],
 							Goal:              g,
 						}

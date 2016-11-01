@@ -13,19 +13,19 @@ const (
 )
 
 type Card struct {
-	FootstatsID int
-	PlayerID    int
-	Minute      int
-	Period      MatchPeriod
-	Type        CardType
+	ID       int         `json:"id"`
+	PlayerID int         `json:"player_id"`
+	Minute   int         `json:"minute"`
+	Period   MatchPeriod `json:"period"`
+	Type     CardType    `json:"type"`
 }
 
 type card struct {
-	FootstatsID string `json:"@IdCartao"`
-	PlayerID    string `json:"@Id"`
-	Minute      string `json:"@Minuto"`
-	Period      string `json:"@Periodo"`
-	Type        string `json:"@Tipo"`
+	ID       string `json:"@IdCartao"`
+	PlayerID string `json:"@Id"`
+	Minute   string `json:"@Minuto"`
+	Period   string `json:"@Periodo"`
+	Type     string `json:"@Tipo"`
 }
 
 func (c *Card) UnmarshalJSON(data []byte) error {
@@ -36,11 +36,11 @@ func (c *Card) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsID, _ := strconv.Atoi(o.FootstatsID)
+	id, _ := strconv.Atoi(o.ID)
 	playerID, _ := strconv.Atoi(o.PlayerID)
 	minute, _ := strconv.Atoi(o.Minute)
 
-	c.FootstatsID = footstatsID
+	c.ID = id
 	c.PlayerID = playerID
 	c.Minute = minute
 

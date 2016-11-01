@@ -5,10 +5,12 @@ import (
 )
 
 type GoalEvent struct {
-	HomeTeamScore     int
-	VisitingTeamScore int
+	MatchId int `json:"match_id"`
 
-	Match *footstats.Match
-	Team  *footstats.Team
-	Goal  *footstats.Goal
+	HomeTeamScore     int `json:"home_team_score"`
+	VisitingTeamScore int `json:"visiting_team_score"`
+
+	Team *footstats.Team `json:"team"`
+
+	Goal *footstats.Goal `json:"goal"`
 }

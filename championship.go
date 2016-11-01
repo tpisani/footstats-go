@@ -6,15 +6,15 @@ import (
 )
 
 type Championship struct {
-	FootstatsID       int
-	Name              string
-	HasClassification bool
-	CurrentRound      int
-	TotalRounds       int
+	ID                int    `json:"id"`
+	Name              string `json:"name"`
+	HasClassification bool   `json:"has_classification"`
+	CurrentRound      int    `json:"current_round"`
+	TotalRounds       int    `json:"total_round"`
 }
 
 type championship struct {
-	FootstatsID       string `json:"@Id"`
+	ID                string `json:"@Id"`
 	Name              string `json:"@Nome"`
 	HasClassification string `json:"@TemClassificacao"`
 	CurrentRound      string `json:"@RodadaAtual"`
@@ -33,12 +33,12 @@ func (c *Championship) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsID, _ := strconv.Atoi(o.FootstatsID)
+	id, _ := strconv.Atoi(o.ID)
 	hasClassification, _ := strconv.ParseBool(o.HasClassification)
 	currentRound, _ := strconv.Atoi(o.CurrentRound)
 	totalRounds, _ := strconv.Atoi(o.TotalRounds)
 
-	c.FootstatsID = footstatsID
+	c.ID = id
 	c.HasClassification = hasClassification
 	c.CurrentRound = currentRound
 	c.TotalRounds = totalRounds

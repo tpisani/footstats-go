@@ -6,18 +6,18 @@ import (
 )
 
 type Stadium struct {
-	FootstatsID   int
-	Name          string
-	City          string
-	State         string
-	IsPlaceholder bool
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	City          string `json:"city"`
+	State         string `json:"state"`
+	IsPlaceholder bool   `json:"is_placeholder"`
 }
 
 type stadium struct {
-	FootstatsID string `json:"@Id"`
-	Name        string `json:"@Nome"`
-	City        string `json:"@Cidade"`
-	State       string `json:"@Estado"`
+	ID    string `json:"@Id"`
+	Name  string `json:"@Nome"`
+	City  string `json:"@Cidade"`
+	State string `json:"@Estado"`
 }
 
 func (s *Stadium) UnmarshalJSON(data []byte) error {
@@ -28,9 +28,9 @@ func (s *Stadium) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsID, _ := strconv.Atoi(o.FootstatsID)
+	id, _ := strconv.Atoi(o.ID)
 
-	s.FootstatsID = footstatsID
+	s.ID = id
 	s.Name = o.Name
 	s.City = o.City
 	s.State = o.State

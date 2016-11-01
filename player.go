@@ -6,15 +6,15 @@ import (
 )
 
 type Player struct {
-	FootstatsID int
-	Name        string
-	TeamID      int
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	TeamID int    `json:"team_id"`
 }
 
 type player struct {
-	FootstatsID string `json:"@Id"`
-	Name        string `json:"@Nome"`
-	TeamID      string `json:"@IdEquipe"`
+	ID     string `json:"@Id"`
+	Name   string `json:"@Nome"`
+	TeamID string `json:"@IdEquipe"`
 }
 
 func (p *Player) UnmarshalJSON(data []byte) error {
@@ -25,10 +25,10 @@ func (p *Player) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsID, _ := strconv.Atoi(o.FootstatsID)
+	id, _ := strconv.Atoi(o.ID)
 	teamID, _ := strconv.Atoi(o.TeamID)
 
-	p.FootstatsID = footstatsID
+	p.ID = id
 	p.Name = o.Name
 	p.TeamID = teamID
 

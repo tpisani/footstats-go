@@ -26,19 +26,19 @@ const (
 )
 
 type Match struct {
-	FootstatsID              int
-	ScheduledTo              time.Time
-	Status                   MatchStatus
-	Round                    int
-	HomeTeamID               int
-	HomeTeamScore            int
-	HomeTeamPenaltyScore     int
-	VisitingTeamID           int
-	VisitingTeamScore        int
-	VisitingTeamPenaltyScore int
-	StadiumID                int
-	RefereeID                int
-	HasLiveCoverage          bool
+	ID                       int         `json:"id"`
+	ScheduledTo              time.Time   `json:"scheduled_to"`
+	Status                   MatchStatus `json:"status"`
+	Round                    int         `json:"round"`
+	HomeTeamID               int         `json:"home_team_id"`
+	HomeTeamScore            int         `json:"home_team_score"`
+	HomeTeamPenaltyScore     int         `json:"home_team_penalty_score"`
+	VisitingTeamID           int         `json:"visiting_team_id"`
+	VisitingTeamScore        int         `json:"visiting_team_score"`
+	VisitingTeamPenaltyScore int         `json:"visiting_team_penalty_score"`
+	StadiumID                int         `json:"stadium_id"`
+	RefereeID                int         `json:"referee_id"`
+	HasLiveCoverage          bool        `json:"has_live_coverage"`
 }
 
 type matchWrapper struct {
@@ -48,14 +48,14 @@ type matchWrapper struct {
 }
 
 type matchTeam struct {
-	FootstatsID  string `json:"@Id"`
+	ID           string `json:"@Id"`
 	Score        string `json:"@Placar"`
 	PenaltyScore string `json:"@PlacarPenaltis"`
 	Type         string `json:"@Tipo"`
 }
 
 type match struct {
-	FootstatsID     string       `json:"@Id"`
+	ID              string       `json:"@Id"`
 	ScheduledTo     string       `json:"Data"`
 	Status          string       `json:"Status"`
 	Round           string       `json:"Rodada"`
@@ -73,7 +73,7 @@ func (m *Match) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	footstatsID, _ := strconv.Atoi(o.FootstatsID)
+	id, _ := strconv.Atoi(o.ID)
 	scheduledTo, _ := time.Parse(footstatsTimeLayout, o.ScheduledTo)
 	round, _ := strconv.Atoi(o.Round)
 	stadiumID, _ := strconv.Atoi(o.StadiumID)
@@ -108,15 +108,15 @@ func (m *Match) UnmarshalJSON(data []byte) error {
 		}
 	}
 
-	homeTeamID, _ := strconv.Atoi(homeTeam.FootstatsID)
+	homeTeamID, _ := strconv.Atoi(homeTeam.ID)
 	homeTeamScore, _ := strconv.Atoi(homeTeam.Score)
 	homeTeamPenaltyScore, _ := strconv.Atoi(homeTeam.PenaltyScore)
 
-	visitingTeamID, _ := strconv.Atoi(visitingTeam.FootstatsID)
+	visitingTeamID, _ := strconv.Atoi(visitingTeam.ID)
 	visitingTeamScore, _ := strconv.Atoi(visitingTeam.Score)
 	visitingTeamPenaltyScore, _ := strconv.Atoi(visitingTeam.PenaltyScore)
 
-	m.FootstatsID = footstatsID
+	m.ID = id
 	m.ScheduledTo = scheduledTo
 
 	m.Status = status
