@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type MatchEvents struct {
+type MatchStats struct {
 	HomeTeamScore     int
 	VisitingTeamScore int
 
@@ -14,7 +14,7 @@ type MatchEvents struct {
 	Cards []*Card
 }
 
-type matchEvents struct {
+type matchStats struct {
 	Championship struct {
 		Match struct {
 			HomeTeamScore     string `json:"PlacarMandante"`
@@ -33,8 +33,8 @@ type matchEvents struct {
 	} `json:"Campeonato"`
 }
 
-func (m *MatchEvents) UnmarshalJSON(data []byte) error {
-	var o matchEvents
+func (m *MatchStats) UnmarshalJSON(data []byte) error {
+	var o matchStats
 
 	err := json.Unmarshal(data, &o)
 	if err != nil {

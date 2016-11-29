@@ -130,7 +130,7 @@ func TestEntities(t *testing.T) {
 	}
 }
 
-func TestMatchEvents(t *testing.T) {
+func TestMatchStats(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -143,7 +143,7 @@ func TestMatchEvents(t *testing.T) {
 		writeFileToResponse(w, "api-samples/live.xml")
 	})
 
-	events, err := client.MatchEvents(10999)
+	events, err := client.MatchStats(10999)
 	if err != nil {
 		t.Fatal("unable to retrieve match events:", err)
 	}
