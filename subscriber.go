@@ -6,6 +6,7 @@ import (
 
 type Subscriber struct {
 	initialized bool
+	stopped     bool
 
 	client  *Client
 	matches []*Match
@@ -13,6 +14,10 @@ type Subscriber struct {
 	goalMutex  sync.Mutex
 	goalIDs    []int
 	goalEvents chan *GoalEvent
+
+	cardMutex  sync.Mutex
+	cardIDs    []int
+	cardEvents chan *CardEvent
 }
 
 func NewSubscriber(c *Client, matches []*Match) *Subscriber {
@@ -21,12 +26,13 @@ func NewSubscriber(c *Client, matches []*Match) *Subscriber {
 		matches: matches,
 
 		goalEvents: make(chan *GoalEvent),
+		cardEvents: make(chan *CardEvent),
 	}
-
-	go s.startPolling()
 
 	return s
 }
+
+// TODO: Goals and cards registry sure need some refactoring.
 
 func (s *Subscriber) addGoal(g *Goal) bool {
 	s.goalMutex.Lock()
@@ -42,11 +48,28 @@ func (s *Subscriber) addGoal(g *Goal) bool {
 	return true
 }
 
-func (s *Subscriber) checkNewGoals(wg *sync.WaitGroup, m *Match, goals []*Goal) {
+func (s *Subscriber) addCard(c *Card) bool {
+	s.cardMutex.Lock()
+	defer s.cardMutex.Unlock()
+
+	for _, id := range s.cardIDs {
+		if c.ID == id {
+			return false
+		}
+	}
+
+	s.cardIDs = append(s.cardIDs, c.ID)
+	return true
+}
+
+func (s *Subscriber) checkGoalUpdates(wg *sync.WaitGroup, m *Match, stats *MatchStats) {
 	defer wg.Done()
 
-	for _, g := range goals {
-		if s.addGoal(g) && s.initialized {
+	for _, g := range stats.Goals {
+		if s.addGoal(g) {
+			m.HomeTeamScore = stats.HomeTeamScore
+			m.VisitingTeamScore = stats.VisitingTeamScore
+
 			s.goalEvents <- &GoalEvent{
 				Match: m,
 				Goal:  g,
@@ -55,22 +78,36 @@ func (s *Subscriber) checkNewGoals(wg *sync.WaitGroup, m *Match, goals []*Goal) 
 	}
 }
 
+func (s *Subscriber) checkCardUpdates(wg *sync.WaitGroup, m *Match, stats *MatchStats) {
+	defer wg.Done()
+
+	for _, c := range stats.Cards {
+		if s.addCard(c) {
+			s.cardEvents <- &CardEvent{
+				Match: m,
+				Card:  c,
+			}
+		}
+	}
+}
+
 func (s *Subscriber) poll(wg *sync.WaitGroup, m *Match) {
 	defer wg.Done()
 
-	data, err := s.client.MatchStats(m.ID)
+	stats, err := s.client.MatchStats(m.ID)
 	if err != nil {
 		return
 	}
 
-	wg.Add(1)
-	go s.checkNewGoals(wg, m, data.Goals)
+	wg.Add(2)
+	go s.checkGoalUpdates(wg, m, stats)
+	go s.checkCardUpdates(wg, m, stats)
 }
 
 func (s *Subscriber) startPolling() {
 	wg := &sync.WaitGroup{}
 
-	for {
+	for !s.stopped {
 		for _, m := range s.matches {
 			wg.Add(1)
 			go s.poll(wg, m)
@@ -81,6 +118,20 @@ func (s *Subscriber) startPolling() {
 	}
 }
 
+func (s *Subscriber) Start() {
+	go s.startPolling()
+}
+
+func (s *Subscriber) Stop() {
+	s.stopped = true
+	close(s.goalEvents)
+	close(s.cardEvents)
+}
+
 func (s *Subscriber) GoalEvents() <-chan *GoalEvent {
 	return s.goalEvents
+}
+
+func (s *Subscriber) CardEvents() <-chan *CardEvent {
+	return s.cardEvents
 }
