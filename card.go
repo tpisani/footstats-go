@@ -13,19 +13,21 @@ const (
 )
 
 type Card struct {
-	ID       int         `json:"id"`
-	PlayerID int         `json:"player_id"`
-	Minute   int         `json:"minute"`
-	Period   MatchPeriod `json:"period"`
-	Type     CardType    `json:"type"`
+	ID         int         `json:"id"`
+	PlayerID   int         `json:"player_id"`
+	PlayerName string      `json:"player_name"`
+	Minute     int         `json:"minute"`
+	Period     MatchPeriod `json:"period"`
+	Type       CardType    `json:"type"`
 }
 
 type card struct {
-	ID       string `json:"@IdCartao"`
-	PlayerID string `json:"@Id"`
-	Minute   string `json:"@Minuto"`
-	Period   string `json:"@Periodo"`
-	Type     string `json:"@Tipo"`
+	ID         string `json:"@IdCartao"`
+	PlayerID   string `json:"@Id"`
+	PlayerName string `json:"@Nome"`
+	Minute     string `json:"@Minuto"`
+	Period     string `json:"@Periodo"`
+	Type       string `json:"@Tipo"`
 }
 
 func (c *Card) UnmarshalJSON(data []byte) error {
@@ -42,6 +44,7 @@ func (c *Card) UnmarshalJSON(data []byte) error {
 
 	c.ID = id
 	c.PlayerID = playerID
+	c.PlayerName = o.PlayerName
 	c.Minute = minute
 
 	switch o.Type {
