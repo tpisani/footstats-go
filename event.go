@@ -9,3 +9,15 @@ type CardEvent struct {
 	Match *Match
 	Card  *Card
 }
+
+type MatchStatusEvent struct {
+	Match      *Match
+	UpdateType MatchStatusUpdateType
+}
+
+type MatchStatusUpdateType int
+
+const (
+	MatchStarted = iota
+	MatchFinished
+)

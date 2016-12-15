@@ -18,15 +18,19 @@ type Subscriber struct {
 	cardMutex  sync.Mutex
 	cardIDs    []int
 	cardEvents chan *CardEvent
+
+	matchStatusEvents chan *MatchStatusEvent
 }
 
 func NewSubscriber(c *Client, matches []*Match) *Subscriber {
 	s := &Subscriber{
-		client:  c,
+		client: c,
+
 		matches: matches,
 
-		goalEvents: make(chan *GoalEvent),
-		cardEvents: make(chan *CardEvent),
+		goalEvents:        make(chan *GoalEvent),
+		cardEvents:        make(chan *CardEvent),
+		matchStatusEvents: make(chan *MatchStatusEvent),
 	}
 
 	return s
@@ -62,11 +66,9 @@ func (s *Subscriber) addCard(c *Card) bool {
 	return true
 }
 
-func (s *Subscriber) checkGoalUpdates(wg *sync.WaitGroup, m *Match, stats *MatchStats) {
-	defer wg.Done()
-
+func (s *Subscriber) checkGoalUpdates(m *Match, stats *MatchStats) {
 	for _, g := range stats.Goals {
-		if s.addGoal(g) {
+		if s.addGoal(g) && s.initialized {
 			m.HomeTeamScore = stats.HomeTeamScore
 			m.VisitingTeamScore = stats.VisitingTeamScore
 
@@ -78,15 +80,32 @@ func (s *Subscriber) checkGoalUpdates(wg *sync.WaitGroup, m *Match, stats *Match
 	}
 }
 
-func (s *Subscriber) checkCardUpdates(wg *sync.WaitGroup, m *Match, stats *MatchStats) {
-	defer wg.Done()
-
+func (s *Subscriber) checkCardUpdates(m *Match, stats *MatchStats) {
 	for _, c := range stats.Cards {
-		if s.addCard(c) {
+		if s.addCard(c) && s.initialized {
 			s.cardEvents <- &CardEvent{
 				Match: m,
 				Card:  c,
 			}
+		}
+	}
+}
+
+func (s *Subscriber) checkMatchStatusUpdates(m *Match, stats *MatchStats) {
+	wasInProgress := m.Status == InProgress
+	isInProgress := stats.Status == InProgress
+
+	m.Status = stats.Status
+
+	if !wasInProgress && isInProgress {
+		s.matchStatusEvents <- &MatchStatusEvent{
+			Match:      m,
+			UpdateType: MatchStarted,
+		}
+	} else if wasInProgress && !isInProgress {
+		s.matchStatusEvents <- &MatchStatusEvent{
+			Match:      m,
+			UpdateType: MatchFinished,
 		}
 	}
 }
@@ -99,9 +118,9 @@ func (s *Subscriber) poll(wg *sync.WaitGroup, m *Match) {
 		return
 	}
 
-	wg.Add(2)
-	go s.checkGoalUpdates(wg, m, stats)
-	go s.checkCardUpdates(wg, m, stats)
+	s.checkGoalUpdates(m, stats)
+	s.checkCardUpdates(m, stats)
+	s.checkMatchStatusUpdates(m, stats)
 }
 
 func (s *Subscriber) startPolling() {
@@ -126,6 +145,7 @@ func (s *Subscriber) Stop() {
 	s.stopped = true
 	close(s.goalEvents)
 	close(s.cardEvents)
+	close(s.matchStatusEvents)
 }
 
 func (s *Subscriber) GoalEvents() <-chan *GoalEvent {
@@ -134,4 +154,8 @@ func (s *Subscriber) GoalEvents() <-chan *GoalEvent {
 
 func (s *Subscriber) CardEvents() <-chan *CardEvent {
 	return s.cardEvents
+}
+
+func (s *Subscriber) MatchStatusEvents() <-chan *MatchStatusEvent {
+	return s.matchStatusEvents
 }

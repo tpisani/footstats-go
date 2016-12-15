@@ -10,6 +10,8 @@ type MatchStats struct {
 	HomeTeamScore     int
 	VisitingTeamScore int
 
+	Status MatchStatus
+
 	Goals []*Goal
 	Cards []*Card
 }
@@ -19,6 +21,7 @@ type matchStats struct {
 		Match struct {
 			HomeTeamScore     string `json:"PlacarMandante"`
 			VisitingTeamScore string `json:"PlacarVisitante"`
+			Status            string `json:"Status"`
 			Goals             *struct {
 				Goal *json.RawMessage `json:"Gol"`
 			} `json:"Gols"`
@@ -86,6 +89,20 @@ func (m *MatchStats) UnmarshalJSON(data []byte) error {
 
 	homeTeamScore, _ := strconv.Atoi(o.Championship.Match.HomeTeamScore)
 	visitingTeamScore, _ := strconv.Atoi(o.Championship.Match.VisitingTeamScore)
+
+	var status MatchStatus
+	switch o.Championship.Match.Status {
+	case "Partida não iniciada":
+		status = NotStarted
+	case "Partida encerrada":
+		status = Finished
+	case "Partida cancelada":
+		status = Cancelled
+	default:
+		status = InProgress
+	}
+
+	m.Status = status
 
 	m.HomeTeamScore = homeTeamScore
 	m.VisitingTeamScore = visitingTeamScore
