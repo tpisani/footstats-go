@@ -7,66 +7,101 @@ import (
 )
 
 // https://golang.org/src/time/format.go
-const footstatsTimeLayout = "1/2/2006 3:04:05 PM"
-
-type MatchStatus int
-
-const (
-	NotStarted MatchStatus = iota
-	InProgress
-	Finished
-	Cancelled
-)
+const footstatsDateLayout = "02/01/2006 15:04:05"
 
 type MatchPeriod int
 
 const (
-	FirstHalf MatchPeriod = iota
+	NotStarted MatchPeriod = iota
+
+	FirstHalf
+	FirstInterval
+
 	SecondHalf
+	SecondInterval
+
+	FirstExtraHalf
+	ThirdInterval
+
+	SecondExtraHalf
+
+	Penalties
+
+	Finished
+
+	Interrupted
+	Canceled
 )
 
 type Match struct {
-	ID                       int         `json:"id"`
-	ScheduledTo              time.Time   `json:"scheduled_to"`
-	Status                   MatchStatus `json:"status"`
-	Round                    int         `json:"round"`
-	HomeTeamID               int         `json:"home_team_id"`
-	HomeTeamScore            int         `json:"home_team_score"`
-	HomeTeamPenaltyScore     int         `json:"home_team_penalty_score"`
-	VisitingTeamID           int         `json:"visiting_team_id"`
-	VisitingTeamScore        int         `json:"visiting_team_score"`
-	VisitingTeamPenaltyScore int         `json:"visiting_team_penalty_score"`
-	StadiumID                int         `json:"stadium_id"`
-	RefereeID                int         `json:"referee_id"`
-	HasLiveCoverage          bool        `json:"has_live_coverage"`
+	ID                       int
+	ChampionshipID           int
+	Round                    int
+	HomeTeamID               int
+	HomeTeamName             string
+	HomeTeamScore            int
+	HomeTeamPenaltyScore     int
+	VisitingTeamID           int
+	VisitingTeamName         string
+	VisitingTeamScore        int
+	VisitingTeamPenaltyScore int
+	Period                   MatchPeriod
+	Date                     time.Time
+	Goals                    []Goal
 }
 
-type matchWrapper struct {
-	Matches struct {
-		Match []*Match `json:"Partida"`
-	} `json:"Partidas"`
+type footstatsMatch struct {
+	ID                       string `json:"Id"`
+	ChampionshipID           string `json:"IdCampeonato"`
+	Round                    string `json:"Rodada"`
+	HomeTeamID               string `json:"IdEquipeMandante"`
+	HomeTeamName             string `json:"NomeMandante"`
+	HomeTeamScore            string `json:"PlacarMandante"`
+	HomeTeamPenaltyScore     string `json:"PlacarPenaltisMandante"`
+	VisitingTeamID           string `json:"IdEquipeVisitante"`
+	VisitingTeamName         string `json:"NomeVisitante"`
+	VisitingTeamScore        string `json:"PlacarVisitante"`
+	VisitingTeamPenaltyScore string `json:"PlacarPenaltisVisitante"`
+	Period                   string `json:"PeriodoAtual"`
+	Date                     string `json:"Data"`
+	Goals                    []Goal `json:"Gols"`
 }
 
-type matchTeam struct {
-	ID           string `json:"@Id"`
-	Score        string `json:"@Placar"`
-	PenaltyScore string `json:"@PlacarPenaltis"`
-	Type         string `json:"@Tipo"`
-}
+func matchPeriodFromString(periodString string) MatchPeriod {
+	var period MatchPeriod
 
-type match struct {
-	ID              string       `json:"@Id"`
-	ScheduledTo     string       `json:"Data"`
-	Status          string       `json:"Status"`
-	Round           string       `json:"Rodada"`
-	Teams           []*matchTeam `json:"Equipe"`
-	StadiumID       string       `json:"IdEstadio"`
-	RefereeID       string       `json:"IdArbitro"`
-	HasLiveCoverage string       `json:"AoVivo"`
+	switch periodString {
+	case "Partida não iniciada":
+		period = NotStarted
+	case "Primeiro tempo":
+		period = FirstHalf
+	case "Intervalo 1":
+		period = FirstInterval
+	case "Segundo tempo":
+		period = SecondHalf
+	case "Intervalo 2":
+		period = SecondInterval
+	case "Prorrogação 1":
+		period = FirstExtraHalf
+	case "Intervalo 3":
+		period = ThirdInterval
+	case "Prorrogação 2":
+		period = SecondExtraHalf
+	case "Disputa de Pênaltis":
+		period = Penalties
+	case "Partida encerrada":
+		period = Finished
+	case "Partida interrompida":
+		period = Interrupted
+	case "Partida cancelada":
+		period = Canceled
+	}
+
+	return period
 }
 
 func (m *Match) UnmarshalJSON(data []byte) error {
-	var o match
+	var o footstatsMatch
 
 	err := json.Unmarshal(data, &o)
 	if err != nil {
@@ -74,66 +109,40 @@ func (m *Match) UnmarshalJSON(data []byte) error {
 	}
 
 	id, _ := strconv.Atoi(o.ID)
-	scheduledTo, _ := time.Parse(footstatsTimeLayout, o.ScheduledTo)
+	championshipID, _ := strconv.Atoi(o.ChampionshipID)
 	round, _ := strconv.Atoi(o.Round)
-	stadiumID, _ := strconv.Atoi(o.StadiumID)
-	refereeID, _ := strconv.Atoi(o.RefereeID)
 
-	var status MatchStatus
-	switch o.Status {
-	case "Partida não iniciada":
-		status = NotStarted
-	case "Partida encerrada":
-		status = Finished
-	case "Partida cancelada":
-		status = Cancelled
-	default:
-		status = InProgress
-	}
+	homeTeamID, _ := strconv.Atoi(o.HomeTeamID)
+	homeTeamScore, _ := strconv.Atoi(o.HomeTeamScore)
+	homeTeamPenaltyScore, _ := strconv.Atoi(o.HomeTeamPenaltyScore)
 
-	var hasLiveCoverage bool
-	switch o.HasLiveCoverage {
-	case "Sim":
-		hasLiveCoverage = true
-	default:
-		hasLiveCoverage = false
-	}
+	visitingTeamID, _ := strconv.Atoi(o.VisitingTeamID)
+	visitingTeamScore, _ := strconv.Atoi(o.VisitingTeamScore)
+	visitingTeamPenaltyScore, _ := strconv.Atoi(o.VisitingTeamPenaltyScore)
 
-	var homeTeam, visitingTeam *matchTeam
-	for _, t := range o.Teams {
-		if t.Type == "Mandante" {
-			homeTeam = t
-		} else {
-			visitingTeam = t
-		}
-	}
+	period := matchPeriodFromString(o.Period)
 
-	homeTeamID, _ := strconv.Atoi(homeTeam.ID)
-	homeTeamScore, _ := strconv.Atoi(homeTeam.Score)
-	homeTeamPenaltyScore, _ := strconv.Atoi(homeTeam.PenaltyScore)
-
-	visitingTeamID, _ := strconv.Atoi(visitingTeam.ID)
-	visitingTeamScore, _ := strconv.Atoi(visitingTeam.Score)
-	visitingTeamPenaltyScore, _ := strconv.Atoi(visitingTeam.PenaltyScore)
+	date, _ := time.Parse(footstatsDateLayout, o.Date)
 
 	m.ID = id
-	m.ScheduledTo = scheduledTo
-
-	m.Status = status
-
+	m.ChampionshipID = championshipID
 	m.Round = round
-	m.StadiumID = stadiumID
-	m.RefereeID = refereeID
 
 	m.HomeTeamID = homeTeamID
 	m.HomeTeamScore = homeTeamScore
+	m.HomeTeamName = o.HomeTeamName
 	m.HomeTeamPenaltyScore = homeTeamPenaltyScore
 
 	m.VisitingTeamID = visitingTeamID
+	m.VisitingTeamName = o.VisitingTeamName
 	m.VisitingTeamScore = visitingTeamScore
 	m.VisitingTeamPenaltyScore = visitingTeamPenaltyScore
 
-	m.HasLiveCoverage = hasLiveCoverage
+	m.Period = period
+
+	m.Date = date
+
+	m.Goals = o.Goals
 
 	return nil
 }

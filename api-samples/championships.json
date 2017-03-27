@@ -1,0 +1,37 @@
+[{
+    "Id": "515",
+    "Nome": "Carioca 2017",
+    "Temporada": "2017",
+    "Categoria": "Regional",
+    "TemClassificacao": "1",
+    "TipoColeta": "Estatistica Parcial",
+    "FaseAtual": "Segunda Fase",
+    "RodadaAtual": "15",
+    "QtdRodadas": "22",
+    "Local": "Brasil",
+    "ClassificacaoGrupo": "1"
+}, {
+    "Id": "516",
+    "Nome": "Paulista 2017",
+    "Temporada": "2017",
+    "Categoria": "Regional",
+    "TemClassificacao": "1",
+    "TipoColeta": "Estatistica Parcial",
+    "FaseAtual": "Primeira Fase",
+    "RodadaAtual": "10",
+    "QtdRodadas": "15",
+    "Local": "Brasil",
+    "ClassificacaoGrupo": "1"
+}, {
+    "Id": "517",
+    "Nome": "Cearense 2017",
+    "Temporada": "2017",
+    "Categoria": "Regional",
+    "TemClassificacao": "1",
+    "TipoColeta": "Sem Estatistica",
+    "FaseAtual": "Quartas de Final",
+    "RodadaAtual": "10",
+    "QtdRodadas": "12",
+    "Local": "Brasil",
+    "ClassificacaoGrupo": "0"
+}]

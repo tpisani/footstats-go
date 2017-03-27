@@ -1,0 +1,181 @@
+[{
+    "Id": "50597",
+    "Nome": "Marcos Felipe de Freitas Monteiro",
+    "Apelido": "Marcos Felipe",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Goleiro",
+    "Altura": "1,85",
+    "Nascimento": "13/04/1996"
+}, {
+    "Id": "10544",
+    "Nome": "Diego Cavalieri",
+    "Apelido": "Diego Cavalieri",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Goleiro",
+    "Altura": "1,91",
+    "Nascimento": "01/12/1982"
+}, {
+    "Id": "32131",
+    "Nome": "Júlio César Jacobi",
+    "Apelido": "Júlio César",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Goleiro",
+    "Altura": "1,91",
+    "Nascimento": "02/09/1986"
+}, {
+    "Id": "50797",
+    "Nome": "Matheus Phillipe Coutinho Gomes",
+    "Apelido": "Matheus Phillipe",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Goleiro",
+    "Altura": "1,89",
+    "Nascimento": "10/02/1995"
+}, {
+    "Id": "28995",
+    "Nome": "José Renato da Silva Júnior",
+    "Apelido": "Renato da Silva",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Lateral direito",
+    "Altura": "1,75",
+    "Nascimento": "19/01/1990"
+}, {
+    "Id": "17727",
+    "Nome": "Lucas Rios Marques",
+    "Apelido": "Lucas",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Lateral direito",
+    "Altura": "1,74",
+    "Nascimento": "26/03/1988"
+}, {
+    "Id": "50798",
+    "Nome": "Breno Barboza Brahim",
+    "Apelido": "Breno Brahim",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Lateral direito",
+    "Altura": "1,74",
+    "Nascimento": "28/02/1995"
+}, {
+    "Id": "52427",
+    "Nome": "Breno Pereira Caetano",
+    "Apelido": "Breno Pereira",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Lateral direito",
+    "Altura": "",
+    "Nascimento": "24/01/1997"
+}, {
+    "Id": "50801",
+    "Nome": "Leonardo Pinheiro da Conceição",
+    "Apelido": "Léo",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Lateral esquerdo",
+    "Altura": "1,83",
+    "Nascimento": "06/03/1996"
+}, {
+    "Id": "67030",
+    "Nome": "Marcos Vinícius Silva Rocha Calazans",
+    "Apelido": "Marquinhos Calazans",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Lateral esquerdo",
+    "Altura": "1,72",
+    "Nascimento": "14/06/1996"
+}, {
+    "Id": "11605",
+    "Nome": "Wellington Pereira Rodrigues",
+    "Apelido": "Gum",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "1,89",
+    "Nascimento": "04/01/1986"
+}, {
+    "Id": "25392",
+    "Nome": "Henrique Adriano Buss",
+    "Apelido": "Henrique",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "1,87",
+    "Nascimento": "14/10/1986"
+}, {
+    "Id": "42670",
+    "Nome": "Reginaldo Manoel da Silva Junior",
+    "Apelido": "Reginaldo",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "",
+    "Nascimento": "08/07/1992"
+}, {
+    "Id": "21493",
+    "Nome": "Renato de Araújo Chaves Júnior ",
+    "Apelido": "Renato Chaves",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "1,85",
+    "Nascimento": "04/05/1990"
+}, {
+    "Id": "50800",
+    "Nome": "Ygor Nogueira de Paula",
+    "Apelido": "Ygor Nogueira",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "1,87",
+    "Nascimento": "27/03/1995"
+}, {
+    "Id": "67029",
+    "Nome": "Wesley Frazan Bernardo",
+    "Apelido": "Frazan",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "",
+    "Nascimento": "05/06/1996"
+}, {
+    "Id": "14649",
+    "Nome": "Carlos Henrique dos Santos Souza",
+    "Apelido": "Henrique Souza",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "1,88",
+    "Nascimento": "02/05/1983"
+}, {
+    "Id": "52428",
+    "Nome": "Rafael Borges Andrade",
+    "Apelido": "Rafael Borges",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "",
+    "Nascimento": "13/01/1997"
+}, {
+    "Id": "50810",
+    "Nome": "Derlan de Oliveira Bento",
+    "Apelido": "Derlan",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Zagueiro",
+    "Altura": "",
+    "Nascimento": "03/02/1996"
+}, {
+    "Id": "11108",
+    "Nome": "Lucas Pierre Santos de Oliveira",
+    "Apelido": "Pierre",
+    "IdEquipe": "1006",
+    "NomeEquipe": "Fluminense",
+    "Posicao": "Volante",
+    "Altura": "1,72",
+    "Nascimento": "19/01/1982"
+}]

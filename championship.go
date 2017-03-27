@@ -6,27 +6,21 @@ import (
 )
 
 type Championship struct {
-	ID                int    `json:"id"`
-	Name              string `json:"name"`
-	HasClassification bool   `json:"has_classification"`
-	CurrentRound      int    `json:"current_round"`
-	TotalRounds       int    `json:"total_round"`
+	ID           int
+	Name         string
+	Rounds       int
+	CurrentRound int
 }
 
-type championship struct {
-	ID                string `json:"@Id"`
-	Name              string `json:"@Nome"`
-	HasClassification string `json:"@TemClassificacao"`
-	CurrentRound      string `json:"@RodadaAtual"`
-	TotalRounds       string `json:"@Rodadas"`
-}
-
-type championshipWrapper struct {
-	Championships []*Championship `json:"Campeonato"`
+type footstatsChampionship struct {
+	ID           string `json:"Id"`
+	Name         string `json:"Nome"`
+	Rounds       string `json:"QtdRodadas"`
+	CurrentRound string `json:"RodadaAtual"`
 }
 
 func (c *Championship) UnmarshalJSON(data []byte) error {
-	var o championship
+	var o footstatsChampionship
 
 	err := json.Unmarshal(data, &o)
 	if err != nil {
@@ -34,14 +28,13 @@ func (c *Championship) UnmarshalJSON(data []byte) error {
 	}
 
 	id, _ := strconv.Atoi(o.ID)
-	hasClassification, _ := strconv.ParseBool(o.HasClassification)
+	rounds, _ := strconv.Atoi(o.Rounds)
 	currentRound, _ := strconv.Atoi(o.CurrentRound)
-	totalRounds, _ := strconv.Atoi(o.TotalRounds)
 
 	c.ID = id
-	c.HasClassification = hasClassification
+	c.Name = o.Name
+	c.Rounds = rounds
 	c.CurrentRound = currentRound
-	c.TotalRounds = totalRounds
 
 	return nil
 }

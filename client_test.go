@@ -1,9 +1,10 @@
 package footstats
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strings"
 
@@ -11,51 +12,46 @@ import (
 )
 
 var (
-	mux      *http.ServeMux
-	client   *Client
-	server   *httptest.Server
-	username string = "username"
-	password string = "password"
+	mux    *http.ServeMux
+	server *httptest.Server
+	token  = "footstats-token"
+	client *Client
 )
 
-func setup() {
+func init() {
 	mux = http.NewServeMux()
+
 	server = httptest.NewServer(mux)
-
-	client = NewClient(server.URL, username, password)
+	client = &Client{
+		baseURL: server.URL,
+		token:   token,
+	}
 }
 
-func teardown() {
-	server.Close()
-}
-
-func writeFileToResponse(w http.ResponseWriter, filename string) {
+func copyFileToResponse(w http.ResponseWriter, filename string) {
 	f, _ := os.Open(filename)
-	b, _ := ioutil.ReadAll(f)
-	w.Write(b)
+	io.Copy(w, f)
 }
 
-func TestAuth(t *testing.T) {
-	setup()
-	defer teardown()
+func TestURLBuilding(t *testing.T) {
+	u := client.buildURL("test-endpoint", nil)
 
-	url := client.buildURL("test-endpoint", nil)
-
-	if !strings.Contains(url, "usuario="+username) {
-		t.Error("missing username")
+	if !strings.Contains(u, "token="+token) {
+		t.Error("missing token")
 	}
 
-	if !strings.Contains(url, "senha="+password) {
-		t.Error("missing password")
+	params := &url.Values{}
+	params.Set("key", "value")
+	u = client.buildURL("test-endpoint", params)
+
+	if !strings.Contains(u, "key=value") {
+		t.Error("params were not included")
 	}
 }
 
 func TestChampionships(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/ListaCampeonatos", func(w http.ResponseWriter, r *http.Request) {
-		writeFileToResponse(w, "api-samples/championships.xml")
+	mux.HandleFunc("/V2/api/Campeonato/ListarCampeonatos", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/championships.json")
 	})
 
 	championships, err := client.Championships()
@@ -63,97 +59,102 @@ func TestChampionships(t *testing.T) {
 		t.Fatal("unable to retrieve championships:", err)
 	}
 
-	if clen := len(championships); clen != 2 {
-		t.Error("expected 2 championships, got", clen)
+	if clen := len(championships); clen != 3 {
+		t.Error("championship count mismatch: expected", 3, "got", clen)
 	}
 }
 
-func TestMatches(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/ListaPartidas", func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("campeonato")
-		if id != "434" {
-			t.Error("expected championship ID 434, got", id)
-		}
-
-		writeFileToResponse(w, "api-samples/matches.xml")
+func TestPlayersByTeam(t *testing.T) {
+	mux.HandleFunc("/V2/api/Jogador/JogadoresEquipe", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/players-by-team.json")
 	})
 
-	matches, err := client.Matches(434)
+	players, err := client.PlayersByTeam(1006)
 	if err != nil {
-		t.Fatal("unable to retrieve matches:", err)
+		t.Fatal("unable to retrieve players by team:", err)
 	}
 
-	if mlen := len(matches); mlen != 4 {
-		t.Error("expected 4 matches, got", mlen)
+	if plen := len(players); plen != 20 {
+		t.Error("player count mismatch: expected", 20, "got", plen)
 	}
 }
 
-func TestEntities(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/ListaEntidades", func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("campeonato")
-		if id != "434" {
-			t.Error("Expected championship ID 434, got", id)
-		}
-
-		writeFileToResponse(w, "api-samples/entities.xml")
+func TestTeamsByChampionship(t *testing.T) {
+	mux.HandleFunc("/V2/api/Equipe/EquipesCampeonato", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/teams.json")
 	})
 
-	entities, err := client.Entities(434)
+	teams, err := client.TeamsByChampionship(515)
 	if err != nil {
-		t.Fatal("unable to retrieve entities:", err)
+		t.Fatal("unable to retrieve teams by championship:", err)
 	}
 
-	if elen := len(entities.Teams); elen != 6 {
-		t.Error("expected 6 teams, got", elen)
+	if tlen := len(teams); tlen != 4 {
+		t.Error("team count mismatch: expected", 4, "got", tlen)
 	}
 
-	if plen := len(entities.Players); plen != 4 {
-		t.Error("expected 4 players, got", plen)
+}
+
+func TestMatchesByChampionship(t *testing.T) {
+	mux.HandleFunc("/V2/api/Partida/PartidasCampeonato", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/matches.json")
+	})
+
+	matches, err := client.MatchesByChampionship(515)
+	if err != nil {
+		t.Fatal("unable to retrieve matches by championship:", err)
 	}
 
-	if clen := len(entities.Coaches); clen != 2 {
-		t.Error("expected 2 coaches, got", clen)
-	}
-
-	if rlen := len(entities.Referees); rlen != 2 {
-		t.Error("expected 2 referees, got", rlen)
-	}
-
-	if slen := len(entities.Stadiums); slen != 2 {
-		t.Error("expected 2 stadiums, got", slen)
+	if mlen := len(matches); mlen != 5 {
+		t.Error("match count mismatch: expected", 5, "got", mlen)
 	}
 }
 
-func TestMatchStats(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/AoVivo", func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("idpartida")
-		if id != "10999" {
-			t.Error("expected match ID 10999, got", id)
-		}
-
-		writeFileToResponse(w, "api-samples/live.xml")
+func TestOnGoingMatches(t *testing.T) {
+	mux.HandleFunc("/V2/api/Partida/PartidasAndamento", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/ongoing-matches.json")
 	})
 
-	events, err := client.MatchStats(10999)
+	matches, err := client.OnGoingMatches()
 	if err != nil {
-		t.Fatal("unable to retrieve match events:", err)
+		t.Fatal("unable to retrieve ongoing matches:", err)
 	}
 
-	if glen := len(events.Goals); glen != 2 {
-		t.Error("expected 2 goals, got", glen)
+	if mlen := len(matches); mlen != 2 {
+		t.Error("match count mismatch: expected", 2, "got", mlen)
+	}
+}
+
+func TestMatchFeed(t *testing.T) {
+	mux.HandleFunc("/V2/api/Partida/NarracaoMinMin/", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/match-feed.json")
+	})
+
+	feed, err := client.MatchFeed(125718)
+	if err != nil {
+		t.Fatal("unable to retrieve match feed:", err)
 	}
 
-	if clen := len(events.Cards); clen != 3 {
-		t.Error("expected 3 cards, got", clen)
+	if flen := len(feed); flen != 55 {
+		t.Error("feed count mismatch: expected", 55, "got", flen)
+	}
+}
+
+func TestMatchLineup(t *testing.T) {
+	mux.HandleFunc("/V2/api/Partida/Escalacao", func(w http.ResponseWriter, r *http.Request) {
+		copyFileToResponse(w, "api-samples/match-lineup.json")
+	})
+
+	lineup, err := client.MatchLineup(125738)
+	if err != nil {
+		t.Fatal("unable to retrieve match lineup:", err)
 	}
 
+	if htlen := len(lineup.HomeTeamLineup); htlen != 14 {
+		t.Error("home team lineup count mismatch: expected", htlen, "got", htlen)
+	}
+
+	if vtlen := len(lineup.VisitingTeamLineup); vtlen != 14 {
+		t.Error("visiting team lineup count mismatch: expected", 14, "got", vtlen)
+	}
 }

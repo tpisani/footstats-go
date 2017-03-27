@@ -1,131 +1,199 @@
 package footstats
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strconv"
+	"sync"
 )
 
-var tagExp = regexp.MustCompile("<.*?>")
+type matchFilter func(match Match) bool
 
 type Client struct {
-	baseURL  string
-	user     string
-	password string
+	baseURL string
+	token   string
 }
 
-func NewClient(baseURL, user, password string) *Client {
+func NewClient(token string) *Client {
 	return &Client{
-		baseURL:  baseURL,
-		user:     user,
-		password: password,
+		baseURL: "http://apifutebol.footstats.com.br",
+		token:   token,
 	}
 }
 
 func (c *Client) buildURL(endpoint string, params *url.Values) string {
-	u := fmt.Sprintf("%s/%s?usuario=%s&senha=%s",
-		c.baseURL, endpoint, c.user, c.password)
+	var b bytes.Buffer
+
+	fmt.Fprintf(&b, "%s/%s?token=%s", c.baseURL, endpoint, c.token)
 
 	if params != nil {
-		u = fmt.Sprintf("%s&%s", u, params.Encode())
+		fmt.Fprintf(&b, "&%s", params.Encode())
 	}
 
-	return u
+	return b.String()
 }
 
-func (c *Client) makeRequest(endpoint string, params *url.Values) ([]byte, error) {
+func (c *Client) makeRequest(endpoint string, params *url.Values) (io.ReadCloser, error) {
 	u := c.buildURL(endpoint, params)
-
 	resp, err := http.Get(u)
-	if err != nil {
-		return nil, err
+
+	statusFamily := resp.StatusCode / 100
+
+	if statusFamily == 4 {
+		err = errors.New("client error: " + resp.Status)
+	} else if statusFamily == 5 {
+		err = errors.New("internal server error: " + resp.Status)
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	data = tagExp.ReplaceAll(data, []byte(""))
-
-	return data, nil
+	return resp.Body, err
 }
 
-func (c *Client) Championships() ([]*Championship, error) {
-	data, err := c.makeRequest("ListaCampeonatos", nil)
-	if err != nil {
-		return nil, err
-	}
+func (c *Client) Championships() ([]Championship, error) {
+	var championships []Championship
 
-	var wrapper championshipWrapper
-	err = json.Unmarshal(data, &wrapper)
+	r, err := c.makeRequest("V2/api/Campeonato/ListarCampeonatos", nil)
 	if err != nil {
-		return nil, err
+		return championships, err
 	}
+	defer r.Close()
 
-	return wrapper.Championships, nil
+	err = json.NewDecoder(r).Decode(&championships)
+
+	return championships, err
 }
 
-func (c *Client) Matches(championshipID int) ([]*Match, error) {
+func (c *Client) TeamsByChampionship(championshipID int) ([]Team, error) {
+	var teams []Team
+
 	params := &url.Values{}
-	params.Set("campeonato", strconv.Itoa(championshipID))
+	params.Set("idcampeonato", strconv.Itoa(championshipID))
 
-	data, err := c.makeRequest("ListaPartidas", params)
+	r, err := c.makeRequest("V2/api/Equipe/EquipesCampeonato", params)
 	if err != nil {
-		return nil, err
+		return teams, err
 	}
+	defer r.Close()
 
-	var wrapper matchWrapper
-	err = json.Unmarshal(data, &wrapper)
-	if err != nil {
-		return nil, err
-	}
+	err = json.NewDecoder(r).Decode(&teams)
 
-	return wrapper.Matches.Match, nil
+	return teams, err
 }
 
-func (c *Client) Entities(championshipID int) (*Entities, error) {
+func (c *Client) PlayersByTeam(teamID int) ([]Player, error) {
+	var players []Player
+
 	params := &url.Values{}
-	params.Set("campeonato", strconv.Itoa(championshipID))
-
-	data, err := c.makeRequest("ListaEntidades", params)
+	params.Set("idequipe", strconv.Itoa(teamID))
+	r, err := c.makeRequest("V2/api/Jogador/JogadoresEquipe", params)
 	if err != nil {
-		return nil, err
+		return players, err
 	}
 
-	var wrapper entitiesWrapper
-	err = json.Unmarshal(data, &wrapper)
-	if err != nil {
-		return nil, err
-	}
+	err = json.NewDecoder(r).Decode(&players)
 
-	return &Entities{
-		Teams:    wrapper.Teams.Team,
-		Players:  wrapper.Players.Player,
-		Coaches:  wrapper.Coaches.Coach,
-		Referees: wrapper.Referees.Referee,
-		Stadiums: wrapper.Stadiums.Stadium,
-	}, nil
+	return players, err
 }
 
-func (c *Client) MatchStats(matchID int) (*MatchStats, error) {
+func (c *Client) MatchesByChampionship(championshipID int) ([]Match, error) {
+	var matches []Match
+
+	params := &url.Values{}
+	params.Set("idcampeonato", strconv.Itoa(championshipID))
+
+	r, err := c.makeRequest("V2/api/Partida/PartidasCampeonato", params)
+	if err != nil {
+		return matches, err
+	}
+	defer r.Close()
+
+	err = json.NewDecoder(r).Decode(&matches)
+
+	return matches, err
+}
+
+func (c *Client) OnGoingMatches() ([]Match, error) {
+	var matches []Match
+
+	r, err := c.makeRequest("V2/api/Partida/PartidasAndamento", nil)
+	if err != nil {
+		return matches, err
+	}
+	defer r.Close()
+
+	err = json.NewDecoder(r).Decode(&matches)
+
+	return matches, err
+}
+
+func (c *Client) filterMatches(wg *sync.WaitGroup, championshipID int, filteredMatches *[]Match, filter matchFilter) {
+	defer wg.Done()
+
+	matches, err := c.MatchesByChampionship(championshipID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, m := range matches {
+		if filter(m) {
+			*filteredMatches = append(*filteredMatches, m)
+		}
+	}
+}
+
+func (c *Client) FilterMatches(filter matchFilter) ([]Match, error) {
+	var matches []Match
+
+	championships, err := c.Championships()
+	if err != nil {
+		return matches, err
+	}
+
+	wg := &sync.WaitGroup{}
+
+	for _, championship := range championships {
+		wg.Add(1)
+		go c.filterMatches(wg, championship.ID, &matches, filter)
+	}
+
+	wg.Wait()
+
+	return matches, nil
+}
+
+func (c *Client) MatchFeed(matchID int) (Feed, error) {
+	var feedResponse footstatsFeedResponse
+
 	params := &url.Values{}
 	params.Set("idpartida", strconv.Itoa(matchID))
-
-	data, err := c.makeRequest("AoVivo", params)
+	r, err := c.makeRequest("V2/api/Partida/NarracaoMinMin", params)
 	if err != nil {
-		return nil, err
+		return Feed{}, err
 	}
+	defer r.Close()
 
-	var events *MatchStats
-	err = json.Unmarshal(data, &events)
+	err = json.NewDecoder(r).Decode(&feedResponse)
+
+	return feedResponse.Feed, err
+}
+
+func (c *Client) MatchLineup(matchID int) (MatchLineup, error) {
+	var lineup MatchLineup
+
+	params := &url.Values{}
+	params.Set("idpartida", strconv.Itoa(matchID))
+	r, err := c.makeRequest("V2/api/Partida/Escalacao", params)
 	if err != nil {
-		return nil, err
+		return lineup, err
 	}
+	defer r.Close()
 
-	return events, nil
+	err = json.NewDecoder(r).Decode(&lineup)
+
+	return lineup, err
 }

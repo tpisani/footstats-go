@@ -6,54 +6,49 @@ import (
 )
 
 type Goal struct {
-	ID         int         `json:"id"`
-	PlayerID   int         `json:"player_id"`
-	PlayerName string      `json:"player_name"`
-	TeamID     int         `json:"team_id"`
-	Period     MatchPeriod `json:"period"`
-	Minute     int         `json:"minute"`
-	Own        bool        `json:"own"`
+	ID         int
+	PlayerID   int
+	PlayerName string
+	TeamID     int
+	TeamName   string
+	Minute     int
+	Period     MatchPeriod
+	Own        bool
 }
 
-type goal struct {
-	ID     string  `json:"@Id"`
-	Period string  `json:"@Periodo"`
-	Minute string  `json:"@Momento"`
-	Type   string  `json:"@Tipo"`
-	Player *Player `json:"Jogador"`
-	Team   *Team   `json:"Equipe"`
+type footstatsGoal struct {
+	PlayerName string `json:"Jogador"`
+	TeamName   string `json:"Equipe"`
+	Period     string `json:"Periodo"`
+	Minute     string `json:"Momento"`
+	Type       string `json:"Tipo"`
 }
 
 func (g *Goal) UnmarshalJSON(data []byte) error {
-	var o goal
+	var o footstatsGoal
 
 	err := json.Unmarshal(data, &o)
 	if err != nil {
 		return err
 	}
 
-	id, _ := strconv.Atoi(o.ID)
 	minute, _ := strconv.Atoi(o.Minute)
 
-	g.ID = id
-	g.Minute = minute
-	g.PlayerID = o.Player.ID
-	g.PlayerName = o.Player.Name
-	g.TeamID = o.Team.ID
+	period := matchPeriodFromString(o.Period)
 
-	switch o.Period {
-	case "Primeiro tempo":
-		g.Period = FirstHalf
-	case "Segundo tempo":
-		g.Period = SecondHalf
-	}
-
+	var own bool
 	switch o.Type {
+	case "Favor":
+		own = false
 	case "Contra":
-		g.Own = true
-	default:
-		g.Own = false
+		own = true
 	}
+
+	g.PlayerName = o.PlayerName
+	g.TeamName = o.TeamName
+	g.Period = period
+	g.Minute = minute
+	g.Own = own
 
 	return nil
 }
