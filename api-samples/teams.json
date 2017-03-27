@@ -1,0 +1,41 @@
+[{
+    "Id": "1003",
+    "Nome": "Botafogo",
+    "Cidade": "Rio de Janeiro",
+    "Pais": "Brasil",
+    "URLLogo": "http://footstats.com.br/logos/botafogo.png",
+    "Sigla": "BOT",
+    "EquipeFantasia": "0",
+    "TemEstatisticaCompleta": "1",
+    "Estado": "RJ"
+}, {
+    "Id": "1005",
+    "Nome": "Flamengo",
+    "Cidade": "Rio de Janeiro",
+    "Pais": "Brasil",
+    "URLLogo": "http://footstats.com.br/logos/flamengo.png",
+    "Sigla": "FLA",
+    "EquipeFantasia": "0",
+    "TemEstatisticaCompleta": "1",
+    "Estado": "RJ"
+}, {
+    "Id": "1006",
+    "Nome": "Fluminense",
+    "Cidade": "Rio de Janeiro",
+    "Pais": "Brasil",
+    "URLLogo": "http://footstats.com.br/logos/fluminense.png",
+    "Sigla": "FLU",
+    "EquipeFantasia": "0",
+    "TemEstatisticaCompleta": "1",
+    "Estado": "RJ"
+}, {
+    "Id": "1015",
+    "Nome": "Vasco",
+    "Cidade": "Rio de Janeiro",
+    "Pais": "Brasil",
+    "URLLogo": "http://footstats.com.br/logos/vasco.png",
+    "Sigla": "VAS",
+    "EquipeFantasia": "0",
+    "TemEstatisticaCompleta": "1",
+    "Estado": "RJ"
+}]

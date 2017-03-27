@@ -1,0 +1,261 @@
+{
+    "IdMandante": "1015",
+    "Mandante": [{
+        "Id": "16226",
+        "Nome": "Martín Silva",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Goleiro"
+    }, {
+        "Id": "39295",
+        "Nome": "Gilberto",
+        "IdJogadorSubstituto": "33518",
+        "Substituido": "1",
+        "Posicao": "Lateral direito"
+    }, {
+        "Id": "39046",
+        "Nome": "Yago Pikachu",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Lateral direito"
+    }, {
+        "Id": "31496",
+        "Nome": "Jomar",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Zagueiro"
+    }, {
+        "Id": "10018",
+        "Nome": "Rafael Marques",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Zagueiro"
+    }, {
+        "Id": "31494",
+        "Nome": "Henrique",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Lateral esquerdo"
+    }, {
+        "Id": "52600",
+        "Nome": "Jean",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Volante"
+    }, {
+        "Id": "56024",
+        "Nome": "Douglas Luiz",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Volante"
+    }, {
+        "Id": "18921",
+        "Nome": "Andrezinho",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Meia"
+    }, {
+        "Id": "13350",
+        "Nome": "Nenê",
+        "IdJogadorSubstituto": "46674",
+        "Substituido": "1",
+        "Posicao": "Meia"
+    }, {
+        "Id": "55802",
+        "Nome": "Evander",
+        "IdJogadorSubstituto": "39046",
+        "Substituido": "1",
+        "Posicao": "Meia"
+    }, {
+        "Id": "14605",
+        "Nome": "Luís Fabiano",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Atacante"
+    }, {
+        "Id": "46674",
+        "Nome": "Thalles",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Atacante"
+    }, {
+        "Id": "33518",
+        "Nome": "Éderson",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Atacante"
+    }],
+    "IdVisitante": "1003",
+    "Visitante": [{
+        "Id": "16977",
+        "Nome": "Roberto Fernandez",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Goleiro"
+    }, {
+        "Id": "61850",
+        "Nome": "Marcinho",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Lateral direito"
+    }, {
+        "Id": "20710",
+        "Nome": "Émerson Silva",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Zagueiro"
+    }, {
+        "Id": "45502",
+        "Nome": "Joel Carli",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Zagueiro"
+    }, {
+        "Id": "47289",
+        "Nome": "Victor Luis",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Lateral esquerdo"
+    }, {
+        "Id": "20707",
+        "Nome": "Bruno Silva",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Volante"
+    }, {
+        "Id": "20390",
+        "Nome": "Aírton",
+        "IdJogadorSubstituto": "27090",
+        "Substituido": "1",
+        "Posicao": "Volante"
+    }, {
+        "Id": "27090",
+        "Nome": "João Paulo",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Meia"
+    }, {
+        "Id": "16515",
+        "Nome": "Camilo",
+        "IdJogadorSubstituto": "20690",
+        "Substituido": "1",
+        "Posicao": "Meia"
+    }, {
+        "Id": "22456",
+        "Nome": "Montillo",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Meia"
+    }, {
+        "Id": "10362",
+        "Nome": "Roger",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Atacante"
+    }, {
+        "Id": "20690",
+        "Nome": "Rodrigo Pimpão",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Atacante"
+    }, {
+        "Id": "37376",
+        "Nome": "Sassá",
+        "IdJogadorSubstituto": "",
+        "Substituido": "0",
+        "Posicao": "Atacante"
+    }, {
+        "Id": "62326",
+        "Nome": "Guilherme ",
+        "IdJogadorSubstituto": "37376",
+        "Substituido": "1",
+        "Posicao": "Atacante"
+    }],
+    "Gols": [],
+    "Cartoes": [{
+        "Jogador": "Rafael Marques",
+        "TipoEquipe": "Mandante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 4
+    }, {
+        "Jogador": "Nenê",
+        "TipoEquipe": "Mandante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Primeiro tempo",
+        "Minuto": 37
+    }, {
+        "Jogador": "Luís Fabiano",
+        "TipoEquipe": "Mandante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 20
+    }, {
+        "Jogador": "Jean",
+        "TipoEquipe": "Mandante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 12
+    }, {
+        "Jogador": "Roger",
+        "TipoEquipe": "Visitante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 5
+    }, {
+        "Jogador": "Émerson Silva",
+        "TipoEquipe": "Visitante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 31
+    }, {
+        "Jogador": "João Paulo",
+        "TipoEquipe": "Visitante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 40
+    }, {
+        "Jogador": "Victor Luis",
+        "TipoEquipe": "Visitante",
+        "TipoCartao": "Amarelo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 11
+    }],
+    "Substituicoes": [{
+        "TipoEquipe": "Visitante",
+        "Substituido": "Evander",
+        "Substituto": "Yago Pikachu",
+        "Periodo": "Segundo tempo",
+        "Minuto": 12
+    }, {
+        "TipoEquipe": "Visitante",
+        "Substituido": "Guilherme ",
+        "Substituto": "Sassá",
+        "Periodo": "Segundo tempo",
+        "Minuto": 21
+    }, {
+        "TipoEquipe": "Visitante",
+        "Substituido": "Camilo",
+        "Substituto": "Rodrigo Pimpão",
+        "Periodo": "Segundo tempo",
+        "Minuto": 28
+    }, {
+        "TipoEquipe": "Visitante",
+        "Substituido": "Gilberto",
+        "Substituto": "Éderson",
+        "Periodo": "Segundo tempo",
+        "Minuto": 32
+    }, {
+        "TipoEquipe": "Visitante",
+        "Substituido": "Aírton",
+        "Substituto": "João Paulo",
+        "Periodo": "Segundo tempo",
+        "Minuto": 37
+    }, {
+        "TipoEquipe": "Visitante",
+        "Substituido": "Nenê",
+        "Substituto": "Thalles",
+        "Periodo": "Segundo tempo",
+        "Minuto": 42
+    }]
+}

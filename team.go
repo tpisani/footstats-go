@@ -6,21 +6,23 @@ import (
 )
 
 type Team struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	Initials      string `json:"initials"`
-	IsPlaceholder bool   `json:"is_placeholder"`
+	ID            int
+	Name          string
+	Initials      string
+	LogoURL       string
+	IsPlaceholder bool
 }
 
-type team struct {
-	ID            string `json:"@Id"`
-	Name          string `json:"@Nome"`
-	Initials      string `json:"@Sigla"`
-	IsPlaceholder string `json:"@EquipeFantasia"`
+type footstatsTeam struct {
+	ID            string `json:"Id"`
+	Name          string `json:"Nome"`
+	Initials      string `json:"Sigla"`
+	LogoURL       string `json:"URLLogo"`
+	IsPlaceholder string `json:"EquipeFantasia"`
 }
 
 func (t *Team) UnmarshalJSON(data []byte) error {
-	var o team
+	var o footstatsTeam
 
 	err := json.Unmarshal(data, &o)
 	if err != nil {
@@ -33,6 +35,7 @@ func (t *Team) UnmarshalJSON(data []byte) error {
 	t.ID = id
 	t.Name = o.Name
 	t.Initials = o.Initials
+	t.LogoURL = o.LogoURL
 	t.IsPlaceholder = isPlaceholder
 
 	return nil
